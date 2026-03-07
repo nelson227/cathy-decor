@@ -1,22 +1,28 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "public": false,
+  "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "npm install --workspace=frontend --workspace=backend",
+  "installCommand": "npm install --prefix=frontend",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "FRONTEND_URL": "https://cathy-decor.vercel.app"
   },
   "regions": ["fra"],
   "functions": {
-    "backend/**": {
+    "api/index.js": {
       "runtime": "nodejs18.x",
-      "memory": 1024
+      "maxDuration": 30
     }
   },
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
     }
   ]
 }
