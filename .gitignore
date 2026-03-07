@@ -1,9 +1,11 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 npm-debug.log
 yarn-error.log
+
+# Keep package-lock.json for reproducible builds in production
+# package-lock.json should be committed
 
 # Environment variables
 .env
