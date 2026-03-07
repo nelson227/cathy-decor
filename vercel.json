@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "npm install --workspace=frontend --workspace=backend",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "regions": ["fra"],
+  "functions": {
+    "backend/**": {
+      "runtime": "nodejs18.x",
+      "memory": 1024
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
