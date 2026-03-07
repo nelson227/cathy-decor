@@ -21,27 +21,39 @@ const app = express();
 // CORS Configuration
 const corsOptions = {
   origin: function (origin, callback) {
+    // Liste des origines autorisées
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:3000',
-      process.env.FRONTEND_URL,
-      'https://cathy-decor.vercel.app'
-    ].filter(Boolean);
+      'https://cathy-decor.vercel.app',
+      process.env.FRONTEND_URL
+    ].filter(Boolean); // Remove undefined values
     
-    if (!origin || allowedOrigins.includes(origin)) {
+    console.log('CORS Check:', {
+      requestOrigin: origin,
+      allowedOrigins: allowedOrigins,
+      frontendUrlEnv: process.env.FRONTEND_URL
+    });
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.some(allowed => allowed === origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  maxAge: 86400 // 24 hours
 };
 
 // Security Middleware
 app.use(helmet());
 app.use(cors(corsOptions));
+
+// Additional OPTIONS handler for preflight
+app.options('*', cors(corsOptions));
 
 // Logging Middleware
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'combined'));
