@@ -18,12 +18,30 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
+// CORS Configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      process.env.FRONTEND_URL,
+      'https://cathy-decor.vercel.app'
+    ].filter(Boolean);
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Security Middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
-}));
+app.use(cors(corsOptions));
 
 // Logging Middleware
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'combined'));
@@ -45,6 +63,21 @@ app.get('/health', (req, res) => {
     message: 'Cathy Décor API running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// CORS Diagnostics endpoint
+app.get('/api/cors-check', (req, res) => {
+  res.json({
+    origin: req.get('origin') || 'No origin header',
+    frontendUrl: process.env.FRONTEND_URL || 'Not set',
+    allowedOrigins: [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      process.env.FRONTEND_URL,
+      'https://cathy-decor.vercel.app'
+    ].filter(Boolean),
+    isAllowed: req.get('origin') ? 'Check console for CORS result' : 'No origin to check'
   });
 });
 
