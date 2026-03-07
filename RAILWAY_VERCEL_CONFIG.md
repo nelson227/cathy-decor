@@ -26,7 +26,7 @@ Le frontend déjà utilise `import.meta.env.VITE_API_URL` dans `frontend/src/ser
    ```
    FRONTEND_URL=https://cathy-decor.vercel.app
    ```
-   *(Remplacez par votre URL Vercel réelle)*
+   *(Remplacez avec votre URL Vercel réelle)*
 
 4. Cliquez sur **Deploy** pour redéployer avec les nouveaux paramètres
 
@@ -36,9 +36,8 @@ Le frontend déjà utilise `import.meta.env.VITE_API_URL` dans `frontend/src/ser
 2. Allez dans **Settings** → **Environment Variables**
 3. Ajoutez cette variable:
    ```
-   VITE_API_URL=https://cathy-decor-backend.up.railway.app/api
+   VITE_API_URL=https://cathy-decor-production.up.railway.app/api
    ```
-   *(Remplacez avec votre URL Railway réelle)*
 
 4. Redéployez: allez dans **Deployments** et cliquez sur **Redeploy** pour le dernier déploiement
 
