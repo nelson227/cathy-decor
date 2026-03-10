@@ -24,6 +24,13 @@ function Portfolio() {
     fetchProjects();
   }, []);
 
+  // Cleanup: réactiver le scroll si le composant est démonté
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   const fetchProjects = async () => {
     try {
       setLoading(true);
@@ -72,11 +79,13 @@ function Portfolio() {
   const openProject = (project) => {
     setSelectedProject(project);
     setCurrentImageIndex(0);
+    document.body.style.overflow = 'hidden'; // Bloquer le scroll du body
   };
 
   const closeProject = () => {
     setSelectedProject(null);
     setCurrentImageIndex(0);
+    document.body.style.overflow = 'auto'; // Réactiver le scroll du body
   };
 
   const nextImage = () => {
@@ -243,7 +252,7 @@ function Portfolio() {
           onClick={closeProject}
         >
           <div 
-            className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
