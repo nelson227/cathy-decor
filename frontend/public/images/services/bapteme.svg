@@ -1,86 +1,28 @@
-<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background - soft pastoral -->
+<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" width="600" height="400">
   <defs>
-    <linearGradient id="bgGradBapteme" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f0f5f0;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#e0f0e0;stop-opacity:1" />
+    <linearGradient id="baptBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f5f0"/>
+      <stop offset="100%" style="stop-color:#e0f0e0"/>
     </linearGradient>
   </defs>
-  
-  <rect width="600" height="400" fill="url(#bgGradBapteme)"/>
-  
-  <!-- Pedestal/vase base -->
-  <ellipse cx="300" cy="320" rx="100" ry="20" fill="#d4a574" opacity="0.4"/>
-  <path d="M 220 280 L 200 320 Q 200 340 220 345 L 380 345 Q 400 340 400 320 L 380 280" fill="#c4a574" opacity="0.6"/>
-  <ellipse cx="300" cy="280" rx="80" ry="25" fill="#d4a574" opacity="0.5"/>
-  
-  <!-- Main floral wreath/crown -->
-  <!-- Circle base (wreath outline) -->
-  <circle cx="300" cy="200" r="90" fill="none" stroke="#8bb674" stroke-width="8" opacity="0.4"/>
-  
-  <!-- White roses/peonies arranged in circle -->
-  <!-- Top section -->
-  <circle cx="300" cy="115" r="18" fill="#f5f0e8"/>
-  <circle cx="285" cy="125" r="16" fill="#f5f5f5"/>
-  <circle cx="315" cy="125" r="16" fill="#f5f5f5"/>
-  <circle cx="295" cy="110" r="14" fill="#f0ebe3"/>
-  <circle cx="305" cy="110" r="14" fill="#f0ebe3"/>
-  
-  <!-- Left section -->
-  <circle cx="180" cy="160" r="18" fill="#f5f0e8"/>
-  <circle cx="170" cy="175" r="16" fill="#f5f5f5"/>
-  <circle cx="190" cy="180" r="16" fill="#f5f5f5"/>
-  <circle cx="165" cy="165" r="14" fill="#f0ebe3"/>
-  <circle cx="195" cy="168" r="14" fill="#f0ebe3"/>
-  
-  <!-- Right section -->
-  <circle cx="420" cy="160" r="18" fill="#f5f0e8"/>
-  <circle cx="430" cy="175" r="16" fill="#f5f5f5"/>
-  <circle cx="410" cy="180" r="16" fill="#f5f5f5"/>
-  <circle cx="435" cy="165" r="14" fill="#f0ebe3"/>
-  <circle cx="405" cy="168" r="14" fill="#f0ebe3"/>
-  
-  <!-- Bottom section -->
-  <circle cx="300" cy="280" r="18" fill="#f5f0e8"/>
-  <circle cx="315" cy="270" r="16" fill="#f5f5f5"/>
-  <circle cx="285" cy="270" r="16" fill="#f5f5f5"/>
-  <circle cx="310" cy="285" r="14" fill="#f0ebe3"/>
-  <circle cx="290" cy="285" r="14" fill="#f0ebe3"/>
-  
-  <!-- Blue accents (baby blue flowers/ribbons) -->
-  <circle cx="250" cy="155" r="14" fill="#b8d4e8"/>
-  <circle cx="350" cy="155" r="14" fill="#b8d4e8"/>
-  <circle cx="240" cy="220" r="13" fill="#c4dce8"/>
-  <circle cx="360" cy="220" r="13" fill="#c4dce8"/>
-  <circle cx="280" cy="240" r="12" fill="#b8d4e8"/>
-  <circle cx="320" cy="240" r="12" fill="#b8d4e8"/>
-  
-  <!-- Green foliage between flowers -->
-  <ellipse cx="260" cy="140" rx="10" ry="16" fill="#7a9e4d" transform="rotate(-35 260 140)"/>
-  <ellipse cx="340" cy="140" rx="10" ry="16" fill="#7a9e4d" transform="rotate(35 340 140)"/>
-  <ellipse cx="170" cy="200" rx="10" ry="16" fill="#6b8e3d" transform="rotate(25 170 200)"/>
-  <ellipse cx="430" cy="200" rx="10" ry="16" fill="#6b8e3d" transform="rotate(-25 430 200)"/>
-  <ellipse cx="220" cy="265" rx="10" ry="16" fill="#7a9e4d" transform="rotate(-45 220 265)"/>
-  <ellipse cx="380" cy="265" rx="10" ry="16" fill="#7a9e4d" transform="rotate(45 380 265)"/>
-  <ellipse cx="295" cy="310" rx="10" ry="16" fill="#6b8e3d" transform="rotate(0 295 310)"/>
-  <ellipse cx="305" cy="310" rx="10" ry="16" fill="#6b8e3d" transform="rotate(0 305 310)"/>
-  
-  <!-- Ribbon bow at top -->
-  <path d="M 240 100 Q 270 85 300 95 Q 330 85 360 100 L 355 125 Q 330 120 300 125 Q 270 120 245 125 Z" fill="#c4e8f0"/>
-  <circle cx="297" cy="112" r="6" fill="#a8d4e8"/> <!-- knot -->
-  <circle cx="303" cy="112" r="6" fill="#a8d4e8"/> <!-- knot -->
-  
-  <!-- Decorative beads/pearls on wreath -->
-  <circle cx="200" cy="190" r="3" fill="#f5e8d8"/>
-  <circle cx="280" cy="145" r="3" fill="#f5e8d8"/>
-  <circle cx="320" cy="145" r="3" fill="#f5e8d8"/>
-  <circle cx="400" cy="190" r="3" fill="#f5e8d8"/>
-  <circle cx="280" cy="260" r="3" fill="#f5e8d8"/>
-  <circle cx="320" cy="260" r="3" fill="#f5e8d8"/>
-  
-  <!-- Subtle light effects on flowers -->
-  <circle cx="302" cy="113" r="4" fill="#ffffff" opacity="0.4"/>
-  <circle cx="188" cy="158" r="3" fill="#ffffff" opacity="0.3"/>
-  <circle cx="412" cy="158" r="3" fill="#ffffff" opacity="0.3"/>
-  <circle cx="302" cy="278" r="4" fill="#ffffff" opacity="0.4"/>
+  <rect width="600" height="400" fill="url(#baptBg)"/>
+  <!-- Wreath circle -->
+  <circle cx="300" cy="180" r="100" fill="none" stroke="#8bb674" stroke-width="8" opacity="0.3"/>
+  <!-- Flowers -->
+  <circle cx="300" cy="90" r="18" fill="#f5f0e8"/>
+  <circle cx="240" cy="150" r="18" fill="#f5f0e8"/>
+  <circle cx="360" cy="150" r="18" fill="#f5f0e8"/>
+  <circle cx="270" cy="250" r="18" fill="#f5f0e8"/>
+  <circle cx="330" cy="250" r="18" fill="#f5f0e8"/>
+  <!-- Blue accents -->
+  <circle cx="280" cy="140" r="14" fill="#b8d4e8"/>
+  <circle cx="320" cy="140" r="14" fill="#b8d4e8"/>
+  <circle cx="300" cy="210" r="14" fill="#b8d4e8"/>
+  <!-- Leaves -->
+  <ellipse cx="260" cy="120" rx="8" ry="12" fill="#7a9e4d" transform="rotate(-35 260 120)"/>
+  <ellipse cx="340" cy="120" rx="8" ry="12" fill="#7a9e4d" transform="rotate(35 340 120)"/>
+  <!-- Ribbon bow -->
+  <path d="M 240 90 Q 270 75 300 85 Q 330 75 360 90" fill="#c4e8f0"/>
+  <circle cx="298" cy="87" r="5" fill="#a8d4e8"/>
+  <text x="300" y="330" font-size="44" font-weight="bold" text-anchor="middle" fill="#6b8e3d">Baptême</text>
 </svg>

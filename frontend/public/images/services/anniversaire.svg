@@ -1,104 +1,27 @@
-<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
+<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" width="600" height="400">
   <defs>
-    <linearGradient id="bgGradAnniv" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#fff5f0;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#ffe8d9;stop-opacity:1" />
+    <linearGradient id="anniBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fff5f0"/>
+      <stop offset="100%" style="stop-color:#ffe8d9"/>
     </linearGradient>
   </defs>
-  
-  <rect width="600" height="400" fill="url(#bgGradAnniv)"/>
-  
-  <!-- Festive bunting/banner -->
-  <path d="M 80 80 L 100 110 L 120 80 L 140 110 L 160 80 L 180 110 L 200 80 L 220 110 L 240 80 L 260 110 L 280 80 L 300 110 L 320 80 L 340 110 L 360 80 L 380 110 L 400 80 L 420 110 L 440 80 L 460 110 L 480 80 L 500 110 L 520 80" 
-        stroke="#d4af37" stroke-width="3" fill="none"/>
-  
-  <!-- Balloon cluster left -->
-  <!-- Purple balloons -->
-  <circle cx="100" cy="120" r="22" fill="#6b4c8a"/>
-  <line x1="100" y1="142" x2="90" y2="280" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <circle cx="130" cy="100" r="26" fill="#7d5ba8"/>
-  <line x1="130" y1="126" x2="125" y2="290" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <circle cx="160" cy="130" r="24" fill="#8b6ba6"/>
-  <line x1="160" y1="154" x2="160" y2="300" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <!-- Gold/yellow balloons -->
-  <circle cx="115" cy="70" r="20" fill="#d4af37"/>
-  <line x1="115" y1="90" x2="100" y2="290" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <circle cx="145" cy="60" r="22" fill="#e8c547"/>
-  <line x1="145" y1="82" x2="145" y2="300" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <!-- Blue balloons -->
-  <circle cx="85" cy="80" r="21" fill="#4a6b9d"/>
-  <line x1="85" y1="101" x2="75" y2="290" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <circle cx="175" cy="70" r="23" fill="#5d7fa8"/>
-  <line x1="175" y1="93" x2="180" y2="300" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <!-- Balloon cluster right -->
-  <!-- Gold balloons right side -->
-  <circle cx="500" cy="140" r="25" fill="#d4af37"/>
-  <line x1="500" y1="165" x2="510" y2="290" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <circle cx="470" cy="110" r="22" fill="#e8c547"/>
-  <line x1="470" y1="132" x2="460" y2="300" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <!-- Purple balloons right -->
-  <circle cx="530" cy="100" r="24" fill="#6b4c8a"/>
-  <line x1="530" y1="124" x2="545" y2="290" stroke="#f5deb3" stroke-width="1.5"/>
-  
-  <circle cx="485" cy="70" r="21" fill="#8b6ba6"/>
-  <line x1="485" y1="91" x2="475" y2="300" stroke="#f5deb3" stroke-width="1.5"/>
-  
+  <rect width="600" height="400" fill="url(#anniBg)"/>
+  <!-- Balloons -->
+  <circle cx="50" cy="60" r="20" fill="#ff6b6b"/>
+  <circle cx="120" cy="50" r="20" fill="#ffd93d"/>
+  <circle cx="190" cy="70" r="20" fill="#6bcf7f"/>
+  <circle cx="260" cy="55" r="20" fill="#4ecdc4"/>
+  <circle cx="330" cy="65" r="20" fill="#ff6b6b"/>
+  <circle cx="400" cy="50" r="20" fill="#ffd93d"/>
+  <circle cx="470" cy="70" r="20" fill="#6bcf7f"/>
+  <circle cx="540" cy="55" r="20" fill="#4ecdc4"/>
   <!-- Cake -->
-  <!-- Base cake layer -->
-  <ellipse cx="300" cy="250" rx="85" ry="35" fill="#6b4b3d"/>
-  <rect x="215" y="245" width="170" height="35" fill="#7d5c4b"/>
-  <ellipse cx="300" cy="245" rx="85" ry="15" fill="#8b6b59"/>
-  
-  <!-- Middle cake layer -->
-  <ellipse cx="300" cy="190" rx="65" ry="30" fill="#9d6b55"/>
-  <rect x="235" y="185" width="130" height="30" fill="#a8795f"/>
-  <ellipse cx="300" cy="185" rx="65" ry="12" fill="#b8855f"/>
-  
-  <!-- Top cake layer -->
-  <ellipse cx="300" cy="145" rx="45" ry="25" fill="#b89968"/>
-  <rect x="255" y="140" width="90" height="25" fill="#c4a575"/>
-  <ellipse cx="300" cy="140" rx="45" ry="10" fill="#d4b585"/>
-  
-  <!-- Cake decorations - frosting swirls -->
-  <path d="M 240 260 Q 250 255 260 260" stroke="#d4a574" stroke-width="3" fill="none"/>
-  <path d="M 340 260 Q 350 255 360 260" stroke="#d4a574" stroke-width="3" fill="none"/>
-  <path d="M 270 205 Q 280 200 290 205" stroke="#d4a574" stroke-width="2" fill="none"/>
-  <path d="M 310 205 Q 320 200 330 205" stroke="#d4a574" stroke-width="2" fill="none"/>
-  
+  <ellipse cx="300" cy="240" rx="80" ry="35" fill="#8b6f47"/>
+  <rect x="220" y="230" width="160" height="35" fill="#9d7d55"/>
   <!-- Candles -->
-  <rect x="285" y="110" width="8" height="30" fill="#e8d4a8"/>
-  <rect x="307" y="112" width="8" height="28" fill="#e8d4a8"/>
-  <circle cx="289" cy="108" r="5" fill="#ff6b35"/>
-  <circle cx="311" cy="110" r="5" fill="#ff6b35"/>
-  
-  <!-- Candle glow -->
-  <circle cx="289" cy="108" r="8" fill="#ff6b35" opacity="0.3"/>
-  <circle cx="311" cy="110" r="8" fill="#ff6b35" opacity="0.3"/>
-  
-  <!-- Confetti pieces -->
-  <rect x="150" y="200" width="8" height="8" fill="#d4af37" transform="rotate(45 154 204)"/>
-  <rect x="450" y="180" width="8" height="8" fill="#ff6b35" transform="rotate(30 454 184)"/>
-  <rect x="420" y="240" width="8" height="8" fill="#6b4c8a" transform="rotate(60 424 244)"/>
-  <rect x="180" y="320" width="8" height="8" fill="#4a6b9d" transform="rotate(15 184 324)"/>
-  <rect x="500" y="280" width="8" height="8" fill="#d4af37" transform="rotate(75 504 284)"/>
-  
-  <!-- Party ribbons/streamers -->
-  <path d="M 75 150 Q 200 180 300 150" stroke="#d4af37" stroke-width="2" fill="none" opacity="0.6"/>
-  <path d="M 525 160 Q 400 190 300 160" stroke="#ff6b35" stroke-width="2" fill="none" opacity="0.6"/>
-  
-  <!-- Decorative circles on cake -->
-  <circle cx="270" cy="250" r="5" fill="#d4af37"/>
-  <circle cx="330" cy="250" r="5" fill="#d4af37"/>
-  <circle cx="285" cy="190" r="4" fill="#ff6b35"/>
-  <circle cx="315" cy="190" r="4" fill="#ff6b35"/>
+  <rect x="280" y="170" width="8" height="55" fill="#ffe8d9"/>
+  <circle cx="284" cy="168" r="5" fill="#ff6b35"/>
+  <rect x="320" y="175" width="8" height="50" fill="#ffe8d9"/>
+  <circle cx="324" cy="173" r="5" fill="#ff6b35"/>
+  <text x="300" y="330" font-size="44" font-weight="bold" text-anchor="middle" fill="#8b7355">Anniversaire</text>
 </svg>
