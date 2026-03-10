@@ -105,7 +105,7 @@ function LogoAnimated() {
         </g>
 
         {/* Left Ring */}
-        <g transform="translate(140, 330)">
+        <g transform="translate(177, 330)">
           {/* Outer ring */}
           <circle cx="0" cy="0" r="22" fill="none" stroke="#D4AF37" strokeWidth="7" />
 
@@ -122,8 +122,8 @@ function LogoAnimated() {
           <circle cx="0" cy="0" r="16" fill="none" stroke="#C9A961" strokeWidth="2" opacity="0.5" />
         </g>
 
-        {/* Right Ring - overlapping */}
-        <g transform="translate(260, 330)">
+        {/* Right Ring - touching left ring */}
+        <g transform="translate(223, 330)">
           {/* Outer ring */}
           <circle cx="0" cy="0" r="22" fill="none" stroke="#D4AF37" strokeWidth="7" />
 
@@ -139,9 +139,6 @@ function LogoAnimated() {
           {/* Inner detail */}
           <circle cx="0" cy="0" r="16" fill="none" stroke="#C9A961" strokeWidth="2" opacity="0.5" />
         </g>
-
-        {/* Connection line between rings (touch effect) */}
-        <line x1="160" y1="330" x2="240" y2="330" stroke="#D4AF37" strokeWidth="5" opacity="0.3" />
 
         {/* Brand name - elegant serif */}
         <text
