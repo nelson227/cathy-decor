@@ -2,86 +2,39 @@ import express from 'express';
 
 const router = express.Router();
 
-// Mock services data - will be replaced with Service model/database
+// Services data - synchronized with frontend Services.jsx
 const servicesData = [
   {
     id: 1,
-    name: 'Décoration Événement',
-    slug: 'decoration-evenement',
-    description: 'Décoration complète pour tous types d\'événements',
-    image: '/images/services/decoration.jpg',
-    price: 500,
-    duration: '4-8 heures',
-    included: ['Arrangement floral', 'Éclairage', 'Mise en place'],
-    category: 'decoration'
+    name: 'Mariage',
+    slug: 'mariage',
+    image: '/images/services/mariage.png',
+    description: 'Services spécialisés pour créer la décoration de votre jour parfait.',
+    includes: ['Décor salle', 'Table de mariage', 'Arche florale', 'Détails personnalisés']
   },
   {
     id: 2,
-    name: 'Organisation d\'événement',
-    slug: 'organisation-evenement',
-    description: 'Planification et gestion complète de votre événement',
-    image: '/images/services/organisation.jpg',
-    price: 800,
-    duration: 'Variable',
-    included: ['Coordination', 'Gestion du budget', 'Logistique'],
-    category: 'organisation'
+    name: 'Anniversaire',
+    slug: 'anniversaire',
+    image: '/images/services/anniversaire.png',
+    description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.',
+    includes: ['Thématique personnalisée', 'Installation complète', 'Coordination', 'Démontage']
   },
   {
     id: 3,
-    name: 'Décoration Mariage',
-    slug: 'decoration-mariage',
-    description: 'Décoration spécialisée pour mariages de rêve',
-    image: '/images/services/mariage.jpg',
-    price: 1200,
-    duration: '6-10 heures',
-    included: ['Thème personnalisé', 'Salle décorée', 'Photobooth'],
-    category: 'mariage'
+    name: 'Baptême',
+    slug: 'bapteme',
+    image: '/images/services/bapteme.png',
+    description: 'Services délicats et gracieux pour marquer cette belle occasion.',
+    includes: ['Décor salle', 'Arrangements floraux', 'Éclairage doux', 'Mise en place']
   },
   {
     id: 4,
-    name: 'Services Funéraires',
-    slug: 'services-funeraires',
-    description: 'Hommage respectueux et décoration adaptée',
-    image: '/images/services/funeraire.jpg',
-    price: 600,
-    duration: '2-4 heures',
-    included: ['Arrangement floral', 'Draperie', 'Mise en place'],
-    category: 'funeraire'
-  },
-  {
-    id: 5,
-    name: 'Traiteur - Buffet',
-    slug: 'traiteur-buffet',
-    description: 'Buffet gastronomique personnalisé pour vos événements',
-    image: '/images/services/buffet.jpg',
-    price: 40,
-    duration: 'À la personne',
-    included: ['3 entrées', '3 plats', '3 desserts', 'Boissons'],
-    category: 'catering',
-    perPerson: true
-  },
-  {
-    id: 6,
-    name: 'Traiteur - Cocktail',
-    slug: 'traiteur-cocktail',
-    description: 'Service de cocktail avec drinks et petits fours',
-    image: '/images/services/cocktail.jpg',
-    price: 25,
-    duration: 'À la personne',
-    included: ['Petits fours', 'Drinks', 'Service complet'],
-    category: 'catering',
-    perPerson: true
-  },
-  {
-    id: 7,
-    name: 'Location d\'équipement',
-    slug: 'location-equipement',
-    description: 'Location de tables, chaises, vaisselle et décoration',
-    image: '/images/services/equipement.jpg',
-    price: 2000,
-    duration: 'À la journée',
-    included: ['Tables', 'Chaises', 'Nappes', 'Vaisselle', 'Verres'],
-    category: 'equipment'
+    name: 'Funéraires',
+    slug: 'funeraires',
+    image: '/images/services/funeraires.png',
+    description: 'Services respectueux et dignifiés pour les cérémonies funéraires.',
+    includes: ['Arrangement floral', 'Éclairage sobre', 'Draperies', 'Coordination']
   }
 ];
 
