@@ -150,7 +150,7 @@ function Home() {
           {/* CTA Buttons avec hover animation */}
           <div className="flex gap-6 justify-center flex-wrap animate-fade-in-delay-3 mb-12">
             <Link 
-              to="/marketplace" 
+              to="/portfolio" 
               className="group relative px-8 py-4 bg-gold text-white font-bold rounded-lg overflow-hidden hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
             >
               <span className="relative z-10 flex items-center gap-2">
