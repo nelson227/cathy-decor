@@ -5,5 +5,11 @@
   "env": {
     "NODE_ENV": "production",
     "VITE_API_URL": "https://cathy-decor-production.up.railway.app/api"
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
