@@ -18,8 +18,14 @@ export default function AdminLogin() {
 
   // Redirect if already logged in and is admin
   useEffect(() => {
+    console.log('🔍 [AdminLogin] useEffect - user:', user);
+    console.log('🔍 [AdminLogin] useEffect - user?.role:', user?.role);
+    
     if (user && user.role === 'admin') {
+      console.log('✅ [AdminLogin] User is admin, redirecting to /admin');
       navigate('/admin');
+    } else {
+      console.log('❌ [AdminLogin] Not admin or no user');
     }
   }, [user, navigate]);
 
@@ -45,34 +51,70 @@ export default function AdminLogin() {
       console.log('📤 Envoi login:', formData);
       
       const response = await api.post('/auth/login', formData);
-      console.log('📥 Réponse API:', response);
-      console.log('   - success:', response.success);
-      console.log('   - data:', response.data);
-      console.log('   - token:', response.token ? '✅ présent' : '❌ absent');
+      console.log('📥 Réponse API complète:', JSON.stringify(response, null, 2));
+      console.log('   - success:', response?.success);
+      console.log('   - data:', response?.data);
+      console.log('   - data.role:', response?.data?.role);
+      console.log('   - token:', response?.token ? '✅ présent' : '❌ absent');
 
-      if (response.success && response.data?.role === 'admin') {
-        console.log('✅ Connexion valide, sauvegarde...');
-        console.log('   User data:', response.data);
-        
-        // Update auth store (sauvegarde aussi dans localStorage)
-        login(response.data, response.token);
-        console.log('✅ Store mis à jour, naviguer...');
-        
-        toast.success('Connexion réussie!');
-        // Navigate immédiatement sans timeout
-        navigate('/admin');
-      } else if (response.success) {
-        console.log('❌ Pas d\'accès admin');
-        toast.error('Accès administrateur requis');
-      } else {
-        console.log('❌ success=false');
-        toast.error(response.message || 'Erreur de connexion');
+      // Vérification stricte
+      if (!response?.success) {
+        console.error('❌ success est false');
+        toast.error(response?.message || 'Erreur de connexion');
+        setLoading(false);
+        return;
       }
+
+      if (!response?.data?.role) {
+        console.error('❌ Pas de role dans response.data');
+        toast.error('Données utilisateur invalides');
+        setLoading(false);
+        return;
+      }
+
+      if (response.data.role !== 'admin') {
+        console.error('❌ Role n\'est pas admin:', response.data.role);
+        toast.error('Accès administrateur requis');
+        setLoading(false);
+        return;
+      }
+
+      if (!response?.token) {
+        console.error('❌ Token manquant');
+        toast.error('Token d\'authentification manquant');
+        setLoading(false);
+        return;
+      }
+
+      console.log('✅ Tous les checks passent, mise à jour du store...');
+      
+      // Update auth store
+      login(response.data, response.token);
+      console.log('✅ Store mis à jour');
+      console.log('   - user state:', response.data);
+      console.log('   - localStorage token:', localStorage.getItem('cathy-auth-token') ? '✅' : '❌');
+      
+      toast.success('Connexion réussie!');
+      
+      // Navigate with error handling
+      console.log('🔀 Navigation vers /admin...');
+      try {
+        navigate('/admin');
+        console.log('✅ Navigation réussie');
+      } catch (navError) {
+        console.error('❌ Erreur navigation:', navError);
+        toast.error('Erreur lors de la redirection');
+      }
+      
     } catch (error) {
-      console.log('❌ Erreur:', error);
-      const message = error.response?.data?.message || 'Erreur de connexion';
+      console.error('❌ ERREUR CATCH:', error);
+      console.error('   - error.response:', error?.response);
+      console.error('   - error.message:', error?.message);
+      console.error('   - error.stack:', error?.stack);
+      
+      const message = error?.response?.data?.message || error?.message || 'Erreur de connexion';
+      console.error('   - Message final:', message);
       toast.error(message);
-      console.error('Login error:', error);
     } finally {
       setLoading(false);
     }

@@ -101,13 +101,32 @@ export const useAuthStore = create(
       isAuthenticated: false,
       
       login: (user, token) => {
-        console.log('🔐 Zustand: Updating auth store with user:', user);
-        set({ user, token, isAuthenticated: true });
-        console.log('🔐 Zustand: Auth store updated');
+        console.log('🔐 [STORE] login() called with user:', user);
+        console.log('🔐 [STORE] token:', token ? '✅ présent' : '❌ absent');
+        set({ user, token, isAuthenticated: !!token });
+        console.log('🔐 [STORE] State updated');
       },
       
       logout: () => {
+        console.log('🔐 [STORE] logout() called');
         set({ user: null, token: null, isAuthenticated: false });
+      },
+      
+      // Initialize from localStorage (called manually if needed)
+      initialize: () => {
+        const storedUser = localStorage.getItem('cathy-auth-user');
+        const storedToken = localStorage.getItem('cathy-auth-token');
+        console.log('🔐 [STORE] initialize() - storedUser:', !!storedUser, 'storedToken:', !!storedToken);
+        
+        if (storedUser && storedToken) {
+          try {
+            const user = JSON.parse(storedUser);
+            set({ user, token: storedToken, isAuthenticated: true });
+            console.log('🔐 [STORE] initialized from localStorage:', user);
+          } catch (e) {
+            console.error('🔐 [STORE] Error parsing storedUser:', e);
+          }
+        }
       }
     }),
     {
