@@ -15,6 +15,11 @@ const __dirname = path.dirname(__filename);
 // Load environment variables
 dotenv.config();
 
+// Ensure NODE_ENV is set
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'production';
+}
+
 // Initialize Express app
 const app = express();
 
