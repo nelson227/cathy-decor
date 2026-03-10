@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { FiSearch, FiFilter, FiHeart } from 'react-icons/fi';
 import { useCart, useFavorites } from '../hooks';
 import api from '../services/api';
-import toast from 'react-hot-toast';
 
 function Marketplace() {
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -30,76 +29,37 @@ function Marketplace() {
     fetchProducts();
   }, [selectedCategory, searchTerm]);
 
+  const getImageUrl = (imgUrl) => {
+    if (!imgUrl) return '';
+    if (imgUrl.startsWith('http')) return imgUrl;
+    if (imgUrl.startsWith('/uploads')) {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      return baseUrl.replace('/api', '') + imgUrl;
+    }
+    return imgUrl;
+  };
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      
-      if (selectedCategory) {
-        params.append('category', selectedCategory);
-      }
-      if (searchTerm) {
-        params.append('search', searchTerm);
-      }
-      
+      if (selectedCategory) params.append('category', selectedCategory);
+      if (searchTerm) params.append('search', searchTerm);
       params.append('limit', 24);
 
-      const response = await api.get(`/decorations?${params}`);
-      
-      if (response.data && Array.isArray(response.data)) {
-        setProducts(response.data);
-      } else if (response.data && response.data.data) {
-        setProducts(response.data.data);
-      } else {
-        setProducts([]);
-      }
+      const response = await api.get(`/produits?${params}`);
+      setProducts(response.data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des produits:', error);
-      // Fallback: Afficher des données de démonstration si l'API n'est pas disponible
-      const demoProducts = [
-        {
-          _id: '1',
-          name: 'Décoration Mariage Élégante',
-          category: 'mariage',
-          shortDescription: 'Décoration mariage romantique',
-          price: 1500,
-          rating: 4.8,
-          reviewCount: 24,
-          images: []
-        },
-        {
-          _id: '2',
-          name: 'Baby Shower Pastel',
-          category: 'baby-shower',
-          shortDescription: 'Baby shower doux et élégant',
-          price: 850,
-          rating: 4.9,
-          reviewCount: 18,
-          images: []
-        },
-        {
-          _id: '3',
-          name: 'Anniversaire Coloré',
-          category: 'anniversaire',
-          shortDescription: 'Anniversaire festif et joyeux',
-          price: 650,
-          rating: 4.7,
-          reviewCount: 15,
-          images: []
-        }
-      ];
-      setProducts(demoProducts);
-      // Afficher le message une seule fois au lieu d'une toast à répétition
-      if (error.response?.status !== 404) {
-        toast.error('API non disponible - Affichage des données de démonstration');
-      }
+      setProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
   const filteredProducts = products.filter(p => {
-    const matchPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
+    const price = Number(p.price) || 0;
+    const matchPrice = price >= priceRange[0] && price <= priceRange[1];
     return matchPrice;
   });
 
@@ -206,15 +166,16 @@ function Marketplace() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {filteredProducts.map((product) => (
                     <div
-                      key={product._id}
+                      key={product.id}
                       className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
                     >
                       {/* Image */}
                       <div className="relative h-64 bg-gradient-to-br from-gold/20 to-gold/5 overflow-hidden group flex items-center justify-center">
                         {product.images?.[0] ? (
                           <img
-                            src={product.images[0]}
+                            src={getImageUrl(product.images[0])}
                             alt={product.name}
+                            crossOrigin="anonymous"
                             className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
                             onError={(e) => {
                               e.target.style.display = 'none';
@@ -230,19 +191,19 @@ function Marketplace() {
                         </div>
                         <button
                           onClick={() => {
-                            if (favorites.isFavorite(product._id)) {
-                              favorites.removeFavorite(product._id);
+                            if (favorites.isFavorite(product.id)) {
+                              favorites.removeFavorite(product.id);
                             } else {
-                              favorites.addFavorite(product._id);
+                              favorites.addFavorite(product.id);
                             }
                           }}
                           className={`absolute top-4 right-4 p-2 rounded-full transition ${
-                            favorites.isFavorite(product._id)
+                            favorites.isFavorite(product.id)
                               ? 'bg-gold text-white'
                               : 'bg-white/80 hover:bg-gold hover:text-dark'
                           }`}
                         >
-                          <FiHeart size={20} fill={favorites.isFavorite(product._id) ? 'currentColor' : 'none'} />
+                          <FiHeart size={20} fill={favorites.isFavorite(product.id) ? 'currentColor' : 'none'} />
                         </button>
                       </div>
 
@@ -267,7 +228,7 @@ function Marketplace() {
                         {/* Price */}
                         <div className="mb-4">
                           <p className="text-2xl font-bold text-gold">
-                            {product.price.toLocaleString('fr-FR')} DH
+                            {Number(product.price || 0).toLocaleString('fr-FR')} DH
                           </p>
                         </div>
 
@@ -275,7 +236,7 @@ function Marketplace() {
                         <div className="space-y-2">
                           <button
                             onClick={() => cart.addItem({
-                              id: product._id,
+                              id: product.id,
                               name: product.name,
                               price: product.price,
                               quantity: 1

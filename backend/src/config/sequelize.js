@@ -78,6 +78,14 @@ export const connectDB = async () => {
       console.error('❌ Favorite model error:', error.message);
       throw error;
     }
+
+    try {
+      console.log('📦 Loading Produit model...');
+      await import('../models/Produit.js');
+    } catch (error) {
+      console.error('❌ Produit model error:', error.message);
+      throw error;
+    }
     
     console.log('🔄 Synchronizing database models...');
     // Force sync in production to ensure table exists  
