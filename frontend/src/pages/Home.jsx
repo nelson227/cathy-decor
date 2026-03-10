@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiArrowRight, FiStar, FiGift, FiTrendingUp, FiCheck } from 'react-icons/fi';
 import LogoAnimated from '../components/LogoAnimated';
+import api from '../services/api';
 
 function Home() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({ events: 0, satisfaction: 0, experience: 0, shipping: 0 });
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const [decorations, setDecorations] = useState([]);
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
   const statsRef = useRef(null);
   const aboutRef = useRef(null);
   const servicesRef = useRef(null);
@@ -79,6 +83,33 @@ function Home() {
     if (testimonialsRef.current) observer.observe(testimonialsRef.current);
     return () => observer.disconnect();
   }, []);
+
+  // Fetch decorations from portfolio
+  useEffect(() => {
+    const fetchDecorations = async () => {
+      try {
+        const response = await api.get('/decorations?limit=100');
+        if (response.data && response.data.length > 0) {
+          // Limiter à 6 max
+          setDecorations(response.data.slice(0, 6));
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des décorations:', error);
+      }
+    };
+    fetchDecorations();
+  }, []);
+
+  // Auto-play carousel
+  useEffect(() => {
+    if (decorations.length === 0) return;
+    
+    const interval = setInterval(() => {
+      setCurrentCarouselIndex((prev) => (prev + 1) % decorations.length);
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [decorations.length]);
 
   const animateCounters = () => {
     let current = { events: 0, satisfaction: 0, experience: 0, shipping: 0 };
@@ -281,28 +312,102 @@ function Home() {
           <h2 className={`text-4xl font-bold text-center mb-12 transition-all duration-1000 ${portfolioVisible ? 'opacity-100 animate-fade-in-down' : 'opacity-0'}`}>
             Nos évènements les mieux notés
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {Array(6).fill(0).map((_, i) => (
-              <div 
-                key={i}
-                className={`group relative h-64 bg-gradient-to-br from-gold/40 to-gold/20 rounded-lg cursor-pointer overflow-hidden transition-all duration-1000 ${
-                  portfolioVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-                }`}
-                style={portfolioVisible ? { transitionDelay: `${i * 100}ms` } : {}}
-              >
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 flex items-center justify-center">
-                  <FiArrowRight className="text-white text-4xl opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all duration-500" />
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-gray-600 font-medium">Événement {i + 1}</span>
-                </div>
+          
+          {decorations.length > 0 ? (
+            <>
+              {/* Carousel viewed - show all items but only rotating subset */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {decorations.map((decoration, index) => {
+                  // Calculate which items to show (rotating 3-6 items based on carousel)
+                  const itemsToShow = Math.min(decorations.length, 6);
+                  const visibleRange = 3; // Show 3 items at a time on desktop
+                  const offset = currentCarouselIndex % itemsToShow;
+                  const displayIndices = Array.from({ length: visibleRange }, (_, i) => (offset + i) % itemsToShow);
+                  const isVisible = displayIndices.includes(index);
+
+                  if (!isVisible) return null;
+
+                  const firstImage = decoration.images && decoration.images.length > 0 
+                    ? decoration.images[0] 
+                    : 'https://via.placeholder.com/400x300?text=Décoration';
+
+                  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                  const imageUrl = firstImage && firstImage.startsWith('http') 
+                    ? firstImage 
+                    : baseUrl.replace('/api', '') + firstImage;
+
+                  return (
+                    <div
+                      key={decoration.id}
+                      onClick={() => navigate(`/portfolio?highlight=${decoration.id}`)}
+                      className={`group relative h-72 rounded-lg cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-all duration-700 transform ${
+                        isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                      }`}
+                    >
+                      {/* Image Background */}
+                      <img
+                        src={imageUrl}
+                        alt={decoration.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                      {/* Content */}
+                      <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+                        <h3 className="text-2xl font-bold mb-2 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                          {decoration.name}
+                        </h3>
+                        <p className="text-sm text-gray-200 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          {decoration.shortDescription || decoration.description?.substring(0, 80) || 'Décoration élégante'}
+                        </p>
+                        <div className="flex gap-2 flex-wrap opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <span className="px-3 py-1 bg-gold/80 rounded-full text-xs font-semibold">
+                            {decoration.category}
+                          </span>
+                          {decoration.theme && (
+                            <span className="px-3 py-1 bg-sky-light/60 rounded-full text-xs">
+                              {decoration.theme}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Arrow Icon */}
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <FiArrowRight className="text-white text-3xl" />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
+
+              {/* Carousel Indicators */}
+              <div className="flex justify-center gap-2 mb-8">
+                {decorations.slice(0, Math.min(6, decorations.length)).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentCarouselIndex(i)}
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      i === currentCarouselIndex % decorations.length
+                        ? 'bg-gold w-8'
+                        : 'bg-gray-400 w-2 hover:bg-gray-500'
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Chargement des événements...</p>
+            </div>
+          )}
+
           <div className="text-center">
             <Link 
               to="/portfolio"
-              className="inline-block px-8 py-4 bg-gold text-white font-bold rounded-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              className="inline-block px-8 py-4 bg-dark text-white font-bold rounded-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:bg-gold"
             >
               Voir tout le portfolio
             </Link>
