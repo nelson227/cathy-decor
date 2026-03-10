@@ -59,15 +59,24 @@ export default function AdminProducts() {
         const response = await api.post('/upload/single/decorations', formDataFile);
 
         // La réponse est: { success, data: { url, fileName, ... }, message }
-        uploadedImages.push(response.data.data.url);
+        console.log('Upload response:', response.data);
+        
+        if (response.data?.data?.url) {
+          uploadedImages.push(response.data.data.url);
+        } else if (response.data?.url) {
+          uploadedImages.push(response.data.url);
+        } else {
+          console.warn('URL non trouvée dans la réponse:', response.data);
+        }
       }
 
-      setFormData({
-        ...formData,
-        images: [...(formData.images || []), ...uploadedImages]
-      });
-
-      toast.success(`${uploadedImages.length} image(s) uploadée(s)`);
+      if (uploadedImages.length > 0) {
+        setFormData({
+          ...formData,
+          images: [...(formData.images || []), ...uploadedImages]
+        });
+        toast.success(`${uploadedImages.length} image(s) uploadée(s)`);
+      }
     } catch (error) {
       console.error('Erreur upload:', error);
       toast.error('Erreur lors de l\'upload des images');
