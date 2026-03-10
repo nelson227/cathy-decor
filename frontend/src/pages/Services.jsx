@@ -1,6 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { FiX, FiUser, FiPhone, FiMapPin, FiUsers, FiMessageSquare, FiSend } from 'react-icons/fi';
 
 function Services() {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [formData, setFormData] = useState({
+    nom: '',
+    prenom: '',
+    telephone: '',
+    nombreInvites: '',
+    theme: '',
+    lieu: '',
+    date: '',
+    description: ''
+  });
+
   const services = [
     {
       id: 1,
@@ -31,6 +45,72 @@ function Services() {
       price: 'À partir de 1500 DH'
     }
   ];
+
+  const openQuoteModal = (service) => {
+    setSelectedService(service);
+    setFormData({
+      nom: '',
+      prenom: '',
+      telephone: '',
+      nombreInvites: '',
+      theme: '',
+      lieu: '',
+      date: '',
+      description: ''
+    });
+    setShowModal(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedService(null);
+    document.body.style.overflow = 'auto';
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const sendToWhatsApp = () => {
+    // Numéro WhatsApp de la décoratrice (à configurer)
+    const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '+237600000000';
+    
+    // Construire le message formaté
+    const message = `
+🎉 *DEMANDE DE DEVIS - CATHY DÉCOR*
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 *Type d'événement:* ${selectedService?.name}
+
+👤 *Informations client:*
+• Nom: ${formData.nom}
+• Prénom: ${formData.prenom}
+• Téléphone: ${formData.telephone}
+
+📅 *Détails de l'événement:*
+• Date souhaitée: ${formData.date || 'Non précisée'}
+• Nombre d'invités: ${formData.nombreInvites || 'Non précisé'}
+• Thème souhaité: ${formData.theme || 'À définir'}
+• Lieu: ${formData.lieu || 'Non précisé'}
+
+📝 *Description du besoin:*
+${formData.description || 'Aucune description fournie'}
+
+━━━━━━━━━━━━━━━━━━━━━
+Merci de me recontacter pour discuter de ce projet! 🙏
+    `.trim();
+
+    // Créer le lien WhatsApp
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+    
+    // Ouvrir WhatsApp
+    window.open(whatsappUrl, '_blank');
+    
+    // Fermer le modal
+    closeModal();
+  };
 
   return (
     <div className="min-h-screen pt-20 pb-16">
@@ -76,7 +156,10 @@ function Services() {
                 </div>
 
                 {/* CTA */}
-                <button className="w-full btn-primary">
+                <button 
+                  className="w-full btn-primary"
+                  onClick={() => openQuoteModal(service)}
+                >
                   Demander un devis
                 </button>
               </div>
@@ -95,6 +178,181 @@ function Services() {
           </a>
         </section>
       </div>
+
+      {/* Quote Request Modal */}
+      {showModal && selectedService && (
+        <div 
+          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <div 
+            className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-gold to-sky-light p-6 rounded-t-xl">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Demande de Devis</h2>
+                  <p className="text-white/80 mt-1">Service: {selectedService.name}</p>
+                </div>
+                <button 
+                  onClick={closeModal}
+                  className="text-white hover:bg-white/20 p-2 rounded-full transition"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="p-6 space-y-4">
+              {/* Service Info (readonly) */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <p className="text-sm text-gray-500">Type d'événement</p>
+                <p className="font-bold text-dark text-lg">{selectedService.name}</p>
+                <p className="text-gold font-semibold mt-1">{selectedService.price}</p>
+              </div>
+
+              {/* Personal Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <FiUser className="inline mr-1" /> Nom *
+                  </label>
+                  <input
+                    type="text"
+                    name="nom"
+                    value={formData.nom}
+                    onChange={handleInputChange}
+                    placeholder="Votre nom"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Prénom *
+                  </label>
+                  <input
+                    type="text"
+                    name="prenom"
+                    value={formData.prenom}
+                    onChange={handleInputChange}
+                    placeholder="Votre prénom"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiPhone className="inline mr-1" /> Téléphone *
+                </label>
+                <input
+                  type="tel"
+                  name="telephone"
+                  value={formData.telephone}
+                  onChange={handleInputChange}
+                  placeholder="+237 6XX XXX XXX"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                  required
+                />
+              </div>
+
+              {/* Date & Guests */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date de l'événement
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <FiUsers className="inline mr-1" /> Nombre d'invités
+                  </label>
+                  <input
+                    type="number"
+                    name="nombreInvites"
+                    value={formData.nombreInvites}
+                    onChange={handleInputChange}
+                    placeholder="Ex: 150"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Theme */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Thème souhaité
+                </label>
+                <input
+                  type="text"
+                  name="theme"
+                  value={formData.theme}
+                  onChange={handleInputChange}
+                  placeholder="Ex: Romantique, Moderne, Champêtre..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                />
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiMapPin className="inline mr-1" /> Lieu de l'événement
+                </label>
+                <input
+                  type="text"
+                  name="lieu"
+                  value={formData.lieu}
+                  onChange={handleInputChange}
+                  placeholder="Adresse ou nom du lieu"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiMessageSquare className="inline mr-1" /> Description de votre besoin
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Décrivez votre projet, vos attentes, vos inspirations..."
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent resize-none"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                onClick={sendToWhatsApp}
+                disabled={!formData.nom || !formData.prenom || !formData.telephone}
+                className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg transition flex items-center justify-center gap-2"
+              >
+                <FiSend size={20} />
+                Envoyer la demande via WhatsApp
+              </button>
+
+              <p className="text-xs text-gray-500 text-center">
+                En cliquant, vous serez redirigé vers WhatsApp avec votre demande pré-remplie
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
