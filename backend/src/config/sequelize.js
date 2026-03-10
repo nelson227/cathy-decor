@@ -6,29 +6,53 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure data directory exists
-const dataDir = path.join(__dirname, '../../data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
+let sequelize;
 
-// Initialize SQLite database
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(dataDir, 'cathy-decor.db'),
-  logging: process.env.NODE_ENV === 'development' ? console.log : false,
-  define: {
-    timestamps: true,
-    underscored: true
+// Check if we have a DATABASE_URL (PostgreSQL on Railway/production)
+if (process.env.DATABASE_URL) {
+  console.log('🔌 Connecting to PostgreSQL database...');
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: process.env.NODE_ENV === 'production' ? {
+        require: true,
+        rejectUnauthorized: false
+      } : false
+    },
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    define: {
+      timestamps: true,
+      underscored: true
+    }
+  });
+} else {
+  // Local development with SQLite
+  console.log('🔌 Using SQLite database (local development)...');
+  
+  // Ensure data directory exists
+  const dataDir = path.join(__dirname, '../../data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
   }
-});
+
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: path.join(dataDir, 'cathy-decor.db'),
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    define: {
+      timestamps: true,
+      underscored: true
+    }
+  });
+}
 
 // Test connection
 export const connectDB = async () => {
   try {
-    console.log('🔌 Attempting database connection...');
+    const dbType = process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite';
+    console.log(`🔌 Attempting ${dbType} database connection...`);
     await sequelize.authenticate();
-    console.log('✅ SQLite Database Connected');
+    console.log(`✅ ${dbType} Database Connected`);
     
     // Import ALL models AFTER sequelize is initialized
     try {
