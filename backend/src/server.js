@@ -103,14 +103,27 @@ const initializeTestImages = () => {
 initializeTestImages();
 
 
-// Serve uploaded files statically with CORS headers
-app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Max-Age', '86400');
+// CORS headers middleware for uploads
+const uploadsCorsMiddleware = (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  res.setHeader('Cache-Control', 'public, max-age=31536000');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
   next();
-}, express.static(path.join(__dirname, '../public/uploads')));
+};
+
+// Serve uploaded files with CORS
+app.use('/uploads', uploadsCorsMiddleware, express.static(path.join(__dirname, '../public/uploads'), {
+  setHeaders: (res, path) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+}));
 
 // Dedicated image endpoint with explicit CORS headers - CORS SAFE
 app.get('/api/image/:folder/:filename', cors(), (req, res) => {
