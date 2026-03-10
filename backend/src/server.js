@@ -27,7 +27,8 @@ const allowedOrigins = [
 
 // Add FRONTEND_URL if it exists in environment
 if (process.env.FRONTEND_URL && process.env.FRONTEND_URL.trim()) {
-  allowedOrigins.push(process.env.FRONTEND_URL.trim());
+  const frontendUrl = process.env.FRONTEND_URL.trim().replace(/\/$/, '');
+  allowedOrigins.push(frontendUrl);
 }
 
 const corsOptions = {
