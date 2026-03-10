@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiFilter, FiSearch, FiX } from 'react-icons/fi';
 
 function Portfolio() {
   const [selectedCategory, setSelectedCategory] = useState('tous');
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-
-  // Scroll vers le haut au chargement de la page
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const categories = [
     'tous',

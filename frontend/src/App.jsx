@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from './hooks';
 
@@ -32,9 +32,21 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+// Scroll to Top Component
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  return null;
+}
+
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Toaster position="top-right" />
       <Header />
       <main className="min-h-screen bg-white">
