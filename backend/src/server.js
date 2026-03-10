@@ -64,6 +64,45 @@ app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+// Initialize test images if they don't exist
+const initializeTestImages = () => {
+  const uploadsDir = path.join(__dirname, '../public/uploads/decorations');
+  
+  // Create directory if it doesn't exist
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('✅ Created uploads directory');
+  }
+  
+  // Minimal 1x1 PNG (transparent)
+  const pngBuffer = Buffer.from([
+    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00,
+    0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01,
+    0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1F,
+    0x15, 0xC4, 0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+    0x54, 0x08, 0x99, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00,
+    0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49,
+    0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82
+  ]);
+  
+  // Create test images
+  ['test-image-1.jpg', 'test-image-2.jpg'].forEach(filename => {
+    const filePath = path.join(uploadsDir, filename);
+    if (!fs.existsSync(filePath)) {
+      try {
+        fs.writeFileSync(filePath, pngBuffer);
+        console.log(`✅ Created test image: ${filename}`);
+      } catch (error) {
+        console.error(`❌ Error creating test image: ${error.message}`);
+      }
+    }
+  });
+};
+
+// Initialize test images
+initializeTestImages();
+
+
 // Serve uploaded files statically with CORS headers
 app.use('/uploads', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
