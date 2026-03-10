@@ -325,15 +325,22 @@ function Home() {
           {/* Services Carousel */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {services.map((service, index) => {
-              // All 4 services are always visible in home
+              // Calculate which services to show (4 at a time)
+              const itemsToShow = services.length;
+              const visibleRange = 4; // Show 4 items at a time on desktop
+              const offset = currentServiceIndex % itemsToShow;
+              const displayIndices = Array.from({ length: visibleRange }, (_, i) => (offset + i) % itemsToShow);
+              const isVisible = displayIndices.includes(index);
+
+              if (!isVisible) return null;
+
               return (
                 <div
                   key={service.id}
                   onClick={() => navigate('/services')}
                   className={`group relative h-80 rounded-lg cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-all duration-700 transform ${
-                    servicesVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                    isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
                   }`}
-                  style={servicesVisible ? { transitionDelay: `${index * 50}ms` } : {}}
                 >
                   {/* Image Background */}
                   <img
@@ -362,6 +369,21 @@ function Home() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Carousel Indicators */}
+          <div className="flex justify-center gap-2 mb-8">
+            {Array.from({ length: Math.ceil(services.length / 4) }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentServiceIndex(i * 4)}
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  i === Math.floor(currentServiceIndex / 4)
+                    ? 'bg-gold w-8'
+                    : 'bg-gray-400 w-2 hover:bg-gray-500'
+                }`}
+              />
+            ))}
           </div>
 
           {/* CTA Button */}
