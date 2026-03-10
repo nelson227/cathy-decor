@@ -4,10 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Instance Axios
 const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: API_URL
 });
 
 // Add token to requests
@@ -16,6 +13,10 @@ api.interceptors.request.use(
     const token = localStorage.getItem('cathy-auth-token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Ne pas forcer le Content-Type pour FormData
+    if (!(config.data instanceof FormData) && !config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json';
     }
     return config;
   },

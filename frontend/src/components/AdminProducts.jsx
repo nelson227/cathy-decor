@@ -58,9 +58,7 @@ export default function AdminProducts() {
         const formDataFile = new FormData();
         formDataFile.append('file', file);
 
-        const response = await api.post('/upload', formDataFile, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.post('/upload/single/decorations', formDataFile);
 
         uploadedImages.push(response.data.url || response.data.filename);
       }
