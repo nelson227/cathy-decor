@@ -26,19 +26,62 @@ const sequelize = new Sequelize({
 // Test connection
 export const connectDB = async () => {
   try {
+    console.log('🔌 Attempting database connection...');
     await sequelize.authenticate();
     console.log('✅ SQLite Database Connected');
     
     // Import ALL models AFTER sequelize is initialized
-    const { default: User } = await import('../models/User.js');
-    const { default: Decoration } = await import('../models/Decoration.js');
-    const { default: Salle } = await import('../models/Salle.js');
-    const { default: Commande } = await import('../models/Commande.js');
-    const { default: Testimonial } = await import('../models/Testimonial.js');
-    const { default: Favorite } = await import('../models/Favorite.js');
+    try {
+      console.log('📦 Loading User model...');
+      await import('../models/User.js');
+    } catch (error) {
+      console.error('❌ User model error:', error.message);
+      throw error;
+    }
     
-    // Sync all models
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+    try {
+      console.log('📦 Loading Decoration model...');
+      await import('../models/Decoration.js');
+    } catch (error) {
+      console.error('❌ Decoration model error:', error.message);
+      throw error;
+    }
+    
+    try {
+      console.log('📦 Loading Salle model...');
+      await import('../models/Salle.js');
+    } catch (error) {
+      console.error('❌ Salle model error:', error.message);
+      throw error;
+    }
+    
+    try {
+      console.log('📦 Loading Commande model...');
+      await import('../models/Commande.js');
+    } catch (error) {
+      console.error('❌ Commande model error:', error.message);
+      throw error;
+    }
+    
+    try {
+      console.log('📦 Loading Testimonial model...');
+      await import('../models/Testimonial.js');
+    } catch (error) {
+      console.error('❌ Testimonial model error:', error.message);
+      throw error;
+    }
+    
+    try {
+      console.log('📦 Loading Favorite model...');
+      await import('../models/Favorite.js');
+    } catch (error) {
+      console.error('❌ Favorite model error:', error.message);
+      throw error;
+    }
+    
+    console.log('🔄 Synchronizing database models...');
+    // Force sync in production to ensure table exists  
+    await sequelize.sync({ force: false, alter: true });
     console.log('✅ Database Models Synchronized');
   } catch (error) {
     console.error('❌ Database Connection Error:', error);
