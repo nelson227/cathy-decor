@@ -49,8 +49,7 @@ function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">Téléphone</h3>
-                <p className="text-gray-600">+212 6XX XXX XXX</p>
-                <p className="text-gray-600">Lun-Sam: 9h-18h</p>
+                <p className="text-gray-600">+237 675 036 937</p>
               </div>
             </div>
 
@@ -61,8 +60,7 @@ function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">Email</h3>
-                <p className="text-gray-600">contact@cathydecor.com</p>
-                <p className="text-gray-600">Réponse sous 24h</p>
+                <p className="text-gray-600">tchuenchecatherine@gmail.com</p>
               </div>
             </div>
 
@@ -73,8 +71,8 @@ function Contact() {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">Localisation</h3>
-                <p className="text-gray-600">Marrakech, Maroc</p>
-                <p className="text-gray-600">Zone Touristique principale</p>
+                <p className="text-gray-600">Carrefour Mbog-Abang, Odza</p>
+                <p className="text-gray-600">Yaoundé, Cameroun</p>
               </div>
             </div>
 

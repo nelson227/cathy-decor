@@ -41,9 +41,9 @@ function Footer() {
           <div>
             <h4 className="font-bold mb-4 text-gold">Contact</h4>
             <ul className="space-y-2 text-gray-300">
-              <li>📞 +212 XXX XXX XXX</li>
-              <li>📧 contact@cathydecor.com</li>
-              <li>📍 Maroc</li>
+              <li>📞 +237 675 036 937</li>
+              <li>📫 tchuenchecatherine@gmail.com</li>
+              <li>📓 Cameroun</li>
             </ul>
           </div>
         </div>
