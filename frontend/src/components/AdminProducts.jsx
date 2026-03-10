@@ -28,17 +28,23 @@ export default function AdminProducts() {
   const getImageUrl = (imgUrl) => {
     if (!imgUrl) return '';
     
-    // Si c'est déjà une URL complète
+    // Si c'est déjà une URL complète (API endpoint)
     if (imgUrl.startsWith('http')) {
       return imgUrl;
     }
     
-    // Si c'est une URL relative /uploads/...
+    // Si c'est une URL relative /uploads/decorations/file.jpg
     if (imgUrl.startsWith('/uploads')) {
-      // Construire l'URL complète vers le backend
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      const backendDomain = baseUrl.replace('/api', ''); // Enlever /api pour avoir le domaine
-      return `${backendDomain}${imgUrl}`;
+      // Extraire folder et filename
+      const parts = imgUrl.split('/').filter(Boolean); // ['uploads', 'decorations', 'file.jpg']
+      if (parts.length >= 3) {
+        const folder = parts[1];
+        const filename = parts.slice(2).join('/');
+        // Utiliser l'endpoint API CORS-safe
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const apiBase = baseUrl.endsWith('/api') ? baseUrl : baseUrl + '/api';
+        return `${apiBase}/image/${folder}/${filename}`;
+      }
     }
     
     return imgUrl;

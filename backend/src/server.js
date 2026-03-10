@@ -68,8 +68,32 @@ app.use('/uploads', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Max-Age', '86400');
   next();
 }, express.static(path.join(__dirname, '../public/uploads')));
+
+// Dedicated image endpoint with explicit CORS headers
+app.get('/api/image/:folder/:filename', (req, res) => {
+  try {
+    const { folder, filename } = req.params;
+    // Security: prevent directory traversal
+    if (folder.includes('..') || filename.includes('..')) {
+      return res.status(400).json({ error: 'Invalid path' });
+    }
+    
+    // Set CORS headers BEFORE sending file
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Max-Age', '86400');
+    
+    const filePath = path.join(__dirname, '../public/uploads', folder, filename);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Image serve error:', error);
+    res.status(500).json({ error: 'Error serving image' });
+  }
+});
 
 // Health Check Route
 app.get('/health', (req, res) => {
