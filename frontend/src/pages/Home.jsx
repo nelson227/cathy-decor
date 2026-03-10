@@ -257,8 +257,7 @@ function Home() {
             Nos Services
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {['Mariage', 'Anniversaire', 'Baby Shower', 'Baptême',
-              'Funéraires', 'Corporate', 'Extérieurs', 'Intérieurs'].map((service, index) => (
+            {['Mariage', 'Anniversaire', 'Baptême', 'Funéraires'].map((service, index) => (
               <Link key={service} to="/marketplace">
                 <div 
                   className={`group relative overflow-hidden rounded-lg transition-all duration-1000 ${
