@@ -24,6 +24,20 @@ export default function AdminProducts() {
   // Services disponibles (même que la page d'accueil)
   const services = ['mariage', 'anniversaire', 'bapteme', 'funeraire'];
 
+  const fetchDecorations = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/decorations?limit=100');
+      setProducts(res.data?.data || []);
+    } catch (error) {
+      console.error('Erreur chargement décorations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchDecorations(); }, []);
+
   const getImageUrl = (imgUrl) => {
     if (!imgUrl) return '';
     
@@ -120,7 +134,7 @@ export default function AdminProducts() {
       setShowForm(false);
       setEditingId(null);
       resetForm();
-      fetchProducts();
+      fetchDecorations();
     } catch (error) {
       console.error('Erreur:', error);
       toast.error(error.response?.data?.message || 'Erreur');
@@ -143,7 +157,7 @@ export default function AdminProducts() {
       try {
         await api.delete(`/decorations/${id}`);
         toast.success('Décoration supprimée');
-        fetchProducts();
+        fetchDecorations();
       } catch (error) {
         toast.error('Erreur');
       }
