@@ -1,47 +1,69 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+// Helper function to generate unique cart item ID
+const generateCartItemId = (item) => {
+  if (item.selectedCharacteristics && Object.keys(item.selectedCharacteristics).length > 0) {
+    // Create a unique ID based on product ID + selected characteristics
+    const charString = Object.entries(item.selectedCharacteristics)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, value]) => `${key}:${value}`)
+      .join('|');
+    return `${item.id}__${charString}`;
+  }
+  return item.id;
+};
+
 // Cart Store
 export const useCartStore = create(
   persist(
     (set, get) => ({
       items: [],
       
-      // Add item to cart
+      // Add item to cart (with characteristics support)
       addItem: (item) => {
         const items = get().items;
-        const existingItem = items.find(i => i.id === item.id);
+        const cartItemId = generateCartItemId(item);
+        
+        // Check if exact same item (with same characteristics) exists
+        const existingItem = items.find(i => i.cartItemId === cartItemId);
         
         if (existingItem) {
+          // Increment quantity
           set({
             items: items.map(i =>
-              i.id === item.id
+              i.cartItemId === cartItemId
                 ? { ...i, quantity: i.quantity + (item.quantity || 1) }
                 : i
             )
           });
         } else {
+          // Add new item with cartItemId
           set({
-            items: [...items, { ...item, quantity: item.quantity || 1 }]
+            items: [...items, { 
+              ...item, 
+              cartItemId,
+              quantity: item.quantity || 1 
+            }]
           });
         }
       },
       
-      // Remove item
-      removeItem: (itemId) => {
+      // Remove item by cartItemId
+      removeItem: (cartItemId) => {
         set({
-          items: get().items.filter(i => i.id !== itemId)
+          items: get().items.filter(i => i.cartItemId !== cartItemId && i.id !== cartItemId)
         });
       },
       
       // Update quantity
-      updateQuantity: (itemId, quantity) => {
+      updateQuantity: (cartItemId, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(itemId);
+          get().removeItem(cartItemId);
         } else {
           set({
             items: get().items.map(i =>
-              i.id === itemId ? { ...i, quantity } : i
+              (i.cartItemId === cartItemId || i.id === cartItemId) ? { ...i, quantity } : i
             )
           });
         }
@@ -55,8 +77,13 @@ export const useCartStore = create(
       // Get total
       getTotal: () => {
         return get().items.reduce((total, item) => {
-          return total + (item.price * item.quantity);
+          return total + (Number(item.price) * item.quantity);
         }, 0);
+      },
+
+      // Get item count
+      getItemCount: () => {
+        return get().items.reduce((count, item) => count + item.quantity, 0);
       }
     }),
     {

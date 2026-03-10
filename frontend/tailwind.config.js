@@ -12,6 +12,7 @@ module.exports = {
         dark: "#0F172A",
         "navy": "#003d82",
         "sky-light": "#0EA5E9",
+        "primary-dark": "#1a365d", // Dark blue for marketplace
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"],
