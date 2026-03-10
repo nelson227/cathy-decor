@@ -58,7 +58,8 @@ export default function AdminProducts() {
 
         const response = await api.post('/upload/single/decorations', formDataFile);
 
-        uploadedImages.push(response.data.url || response.data.filename);
+        // La réponse est: { success, data: { url, fileName, ... }, message }
+        uploadedImages.push(response.data.data.url);
       }
 
       setFormData({
