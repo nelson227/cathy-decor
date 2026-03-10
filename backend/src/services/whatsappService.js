@@ -3,8 +3,15 @@ import twilio from 'twilio';
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 
-// Initialize Twilio client only if credentials are provided
-const client = (accountSid && authToken) ? twilio(accountSid, authToken) : null;
+// Initialize Twilio client only if credentials are provided AND valid
+// accountSid must start with 'AC' and authToken must be at least 32 chars
+const isValidTwilioConfig = 
+  accountSid && 
+  authToken && 
+  accountSid.startsWith('AC') && 
+  authToken.length >= 32;
+
+const client = isValidTwilioConfig ? twilio(accountSid, authToken) : null;
 
 // Service WhatsApp avec Twilio
 export const sendWhatsAppMessage = async (phoneNumber, message) => {
