@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { FiMapPin, FiPhone, FiMail, FiInstagram, FiFacebook } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for default marker icon
+const defaultIcon = L.icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+L.Marker.prototype.setIcon(defaultIcon);
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -172,36 +186,27 @@ function Contact() {
 
         {/* Map */}
         <div className="rounded-lg overflow-hidden shadow-lg h-96">
-          <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'YOUR_GOOGLE_MAPS_API_KEY'}>
-            <GoogleMap
-              mapContainerStyle={{
-                width: '100%',
-                height: '100%'
-              }}
-              center={{
-                lat: 3.8480,
-                lng: 11.5021
-              }}
-              zoom={15}
-              options={{
-                styles: [
-                  {
-                    featureType: 'all',
-                    elementType: 'labels.text.fill',
-                    stylers: [{ color: '#333333' }]
-                  }
-                ]
-              }}
-            >
-              <Marker
-                position={{
-                  lat: 3.8480,
-                  lng: 11.5021
-                }}
-                title="Carrefour Mbog-Abang, Odza, Yaoundé, Cameroun"
-              />
-            </GoogleMap>
-          </LoadScript>
+          <MapContainer
+            center={[3.8480, 11.5021]}
+            zoom={15}
+            style={{ width: '100%', height: '100%' }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <Marker position={[3.8480, 11.5021]}>
+              <Popup>
+                <div className="text-sm font-bold">
+                  Carrefour Mbog-Abang, Odza<br />
+                  Yaoundé, Cameroun<br />
+                  <a href="tel:+237675036937" className="text-blue-600 hover:underline">
+                    +237 675 036 937
+                  </a>
+                </div>
+              </Popup>
+            </Marker>
+          </MapContainer>
         </div>
       </div>
     </div>
