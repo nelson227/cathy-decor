@@ -37,69 +37,75 @@ const DEFAULT_SERVICES = [
 export default function AdminServices() {
   const [services, setServices] = useState(DEFAULT_SERVICES);
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editingService, setEditingService] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    includes: []
+    includes: ''
   });
 
   useEffect(() => {
     // Les services sont en mémoire pour l'admin
-    // Vous pouvez ajouter une API endpoint si vous voulez les persister en base de données
   }, []);
 
-  const handleAddService = () => {
-    setEditingId(null);
+  const openAddModal = () => {
+    setEditingService(null);
     setFormData({
       name: '',
       description: '',
-      includes: []
+      includes: ''
     });
-    setShowForm(true);
+    setShowModal(true);
   };
 
-  const handleEditService = (service) => {
-    setEditingId(service.id);
+  const openEditModal = (service) => {
+    setEditingService(service);
     setFormData({
       name: service.name,
       description: service.description,
-      includes: service.includes || []
+      includes: Array.isArray(service.includes) ? service.includes.join('\n') : ''
     });
-    setShowForm(true);
+    setShowModal(true);
   };
 
   const handleSaveService = () => {
-    if (!formData.name || !formData.description) {
+    if (!formData.name?.trim() || !formData.description?.trim()) {
       toast.error('Veuillez remplir tous les champs');
       return;
     }
 
-    if (editingId) {
-      // Modifier un service existant
+    const includes = formData.includes
+      .split('\n')
+      .map(item => item.trim())
+      .filter(item => item);
+
+    if (editingService) {
+      // Modifier
       setServices(services.map(s =>
-        s.id === editingId
-          ? { ...s, ...formData }
+        s.id === editingService.id
+          ? { ...s, name: formData.name, description: formData.description, includes }
           : s
       ));
       toast.success('Service modifié avec succès');
     } else {
-      // Ajouter un nouveau service
+      // Ajouter
       const newService = {
         id: Math.max(...services.map(s => s.id), 0) + 1,
-        ...formData,
-        image: '/images/services/default.png'
+        name: formData.name,
+        description: formData.description,
+        image: '/images/services/default.png',
+        includes
       };
       setServices([...services, newService]);
       toast.success('Service ajouté avec succès');
     }
 
-    setShowForm(false);
+    setShowModal(false);
   };
 
   const handleDeleteService = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
       setServices(services.filter(s => s.id !== id));
       toast.success('Service supprimé avec succès');
     }
@@ -110,115 +116,133 @@ export default function AdminServices() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleIncludesChange = (e) => {
-    const value = e.target.value;
-    const includes = value.split('\n').map(item => item.trim()).filter(item => item);
-    setFormData(prev => ({ ...prev, includes }));
-  };
-
   return (
     <div className="admin-section">
       <div className="admin-header-section">
-        <h2>Gestion des Services</h2>
+        <div>
+          <h2>Gestion des Services</h2>
+          <p className="section-subtitle">Gérez les services proposés par Cathy Décor</p>
+        </div>
         <button
           className="admin-btn btn-primary"
-          onClick={handleAddService}
+          onClick={openAddModal}
         >
           <FiPlus /> Ajouter un service
         </button>
       </div>
 
       {/* Services Grid */}
-      <div className="admin-grid">
+      <div className="services-grid">
         {services.map(service => (
-          <div key={service.id} className="admin-card">
-            <div className="card-header">
-              <h3>{service.name}</h3>
-              <div className="card-actions">
+          <div key={service.id} className="service-card">
+            <div className="service-image-wrapper">
+              <img 
+                src={service.image} 
+                alt={service.name}
+                className="service-image"
+              />
+              <div className="service-actions-overlay">
                 <button
-                  className="btn-icon edit"
-                  onClick={() => handleEditService(service)}
+                  className="action-btn edit-btn"
+                  onClick={() => openEditModal(service)}
                   title="Modifier"
                 >
-                  <FiEdit2 />
+                  <FiEdit2 size={18} />
                 </button>
                 <button
-                  className="btn-icon delete"
+                  className="action-btn delete-btn"
                   onClick={() => handleDeleteService(service.id)}
                   title="Supprimer"
                 >
-                  <FiTrash2 />
+                  <FiTrash2 size={18} />
                 </button>
               </div>
             </div>
-            <div className="card-body">
-              <p className="description">{service.description}</p>
-              <div className="includes">
-                <h4>Inclus:</h4>
-                <ul>
-                  {service.includes && service.includes.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              </div>
+            <div className="service-content">
+              <h3>{service.name}</h3>
+              <p className="service-description">{service.description}</p>
+              {service.includes && service.includes.length > 0 && (
+                <div className="service-includes">
+                  <h4>Inclus:</h4>
+                  <ul>
+                    {service.includes.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Form Modal */}
-      {showForm && (
-        <div className="modal-overlay">
-          <div className="modal">
+      {/* Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-services" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{editingId ? 'Modifier le service' : 'Ajouter un service'}</h2>
+              <h2>{editingService ? 'Modifier le service' : 'Ajouter un service'}</h2>
               <button
                 className="close-btn"
-                onClick={() => setShowForm(false)}
+                onClick={() => setShowModal(false)}
               >
-                <FiX />
+                <FiX size={24} />
               </button>
             </div>
 
-            <div className="modal-body">
-              <div className="form-group">
-                <label>Nom du service *</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Ex: Mariage"
-                />
-              </div>
+            <div className="modal-body-services">
+              {editingService && editingService.image && (
+                <div className="modal-image-section">
+                  <img 
+                    src={editingService.image} 
+                    alt={editingService.name}
+                    className="modal-image"
+                  />
+                </div>
+              )}
+              <div className="modal-form-section">
+                <div className="form-group">
+                  <label>Nom du service *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Ex: Mariage"
+                    className="form-input"
+                  />
+                </div>
 
-              <div className="form-group">
-                <label>Description *</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Décrivez le service..."
-                  rows={4}
-                />
-              </div>
+                <div className="form-group">
+                  <label>Description *</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Décrivez le service en détail..."
+                    rows={5}
+                    className="form-textarea"
+                  />
+                </div>
 
-              <div className="form-group">
-                <label>Éléments inclus (un par ligne)</label>
-                <textarea
-                  name="includes"
-                  value={formData.includes.join('\n')}
-                  onChange={handleIncludesChange}
-                  placeholder="Décor salle&#10;Table de mariage&#10;Arche florale"
-                  rows={4}
-                />
+                <div className="form-group">
+                  <label>Éléments inclus (un par ligne)</label>
+                  <textarea
+                    name="includes"
+                    value={formData.includes}
+                    onChange={handleInputChange}
+                    placeholder="Décor salle&#10;Table de mariage&#10;Arche florale&#10;Détails personnalisés"
+                    rows={4}
+                    className="form-textarea"
+                  />
+                </div>
               </div>
             </div>
 
             <div className="modal-footer">
               <button
                 className="btn-secondary"
-                onClick={() => setShowForm(false)}
+                onClick={() => setShowModal(false)}
               >
                 Annuler
               </button>
@@ -226,7 +250,7 @@ export default function AdminServices() {
                 className="btn-primary"
                 onClick={handleSaveService}
               >
-                {editingId ? 'Modifier' : 'Ajouter'}
+                {editingService ? 'Modifier' : 'Ajouter'}
               </button>
             </div>
           </div>
