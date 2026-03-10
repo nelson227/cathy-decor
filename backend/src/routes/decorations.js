@@ -103,15 +103,21 @@ router.post('/', async (req, res) => {
 // UPDATE decoration (admin only)
 router.put('/:id', async (req, res) => {
   try {
-    const decoration = await Decoration.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body, updatedAt: Date.now() },
-      { new: true }
-    );
+    const decoration = await Decoration.findByPk(req.params.id);
 
     if (!decoration) {
       return res.status(404).json({ success: false, message: 'Décoration non trouvée' });
     }
+
+    const { name, ...rest } = req.body;
+    const updateData = { ...rest, updatedAt: new Date() };
+    if (name) {
+      updateData.name = name;
+      updateData.slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    }
+
+    await decoration.update(updateData);
+    await decoration.reload();
 
     res.json({ success: true, data: decoration });
   } catch (error) {
@@ -122,11 +128,13 @@ router.put('/:id', async (req, res) => {
 // DELETE decoration (admin only)
 router.delete('/:id', async (req, res) => {
   try {
-    const decoration = await Decoration.findByIdAndDelete(req.params.id);
+    const decoration = await Decoration.findByPk(req.params.id);
 
     if (!decoration) {
       return res.status(404).json({ success: false, message: 'Décoration non trouvée' });
     }
+
+    await decoration.destroy();
 
     res.json({ success: true, message: 'Décoration supprimée' });
   } catch (error) {

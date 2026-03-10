@@ -92,11 +92,7 @@ router.put('/:id', async (req, res) => {
     if (content) updates.content = content;
     if (rating) updates.rating = rating;
 
-    const testimonial = await Testimonial.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { new: true }
-    );
+    const testimonial = await Testimonial.findByPk(req.params.id);
 
     if (!testimonial) {
       return res.status(404).json({
@@ -104,6 +100,9 @@ router.put('/:id', async (req, res) => {
         message: 'Témoignage non trouvé'
       });
     }
+
+    await testimonial.update(updates);
+    await testimonial.reload();
 
     res.json({
       success: true,
@@ -118,7 +117,7 @@ router.put('/:id', async (req, res) => {
 // DELETE testimonial (admin)
 router.delete('/:id', async (req, res) => {
   try {
-    const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
+    const testimonial = await Testimonial.findByPk(req.params.id);
 
     if (!testimonial) {
       return res.status(404).json({
@@ -126,6 +125,8 @@ router.delete('/:id', async (req, res) => {
         message: 'Témoignage non trouvé'
       });
     }
+
+    await testimonial.destroy();
 
     res.json({
       success: true,
