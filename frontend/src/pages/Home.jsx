@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiStar, FiGift, FiTrendingUp, FiCheck } from 'react-icons/fi';
+import LogoAnimated from '../components/LogoAnimated';
 
 function Home() {
   const [stats, setStats] = useState({ events: 0, satisfaction: 0, experience: 0, shipping: 0 });
@@ -205,12 +206,7 @@ function Home() {
               </div>
             </div>
             <div className={`transition-all duration-1000 delay-300 ${aboutVisible ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-8 scale-95'}`}>
-              <div className="bg-gradient-to-br from-gold/20 to-gold/40 h-96 rounded-lg flex items-center justify-center text-white overflow-hidden shadow-lg">
-                <div className="text-center">
-                  <FiGift size={80} className="mx-auto mb-4 text-gold" />
-                  <p className="text-lg font-bold">Votre événement, notre passion</p>
-                </div>
-              </div>
+              <LogoAnimated />
             </div>
           </div>
         </div>
