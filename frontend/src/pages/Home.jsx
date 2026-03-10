@@ -10,6 +10,7 @@ function Home() {
   const [expandedFAQ, setExpandedFAQ] = useState(null);
   const [decorations, setDecorations] = useState([]);
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
   const statsRef = useRef(null);
   const aboutRef = useRef(null);
   const servicesRef = useRef(null);
@@ -84,6 +85,34 @@ function Home() {
     return () => observer.disconnect();
   }, []);
 
+  // Services data
+  const services = [
+    {
+      id: 1,
+      name: 'Mariage',
+      image: '/images/services/mariage.svg',
+      description: 'Services spécialisés pour créer la décoration de votre jour parfait.'
+    },
+    {
+      id: 2,
+      name: 'Anniversaire',
+      image: '/images/services/anniversaire.svg',
+      description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.'
+    },
+    {
+      id: 3,
+      name: 'Baptême',
+      image: '/images/services/bapteme.svg',
+      description: 'Services délicats et gracieux pour marquer cette belle occasion.'
+    },
+    {
+      id: 4,
+      name: 'Funéraires',
+      image: '/images/services/funeraires.svg',
+      description: 'Services respectueux et dignifiés pour les cérémonies funéraires.'
+    }
+  ];
+
   // Fetch decorations from portfolio
   useEffect(() => {
     const fetchDecorations = async () => {
@@ -110,6 +139,15 @@ function Home() {
 
     return () => clearInterval(interval);
   }, [decorations.length]);
+
+  // Auto-play services carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentServiceIndex((prev) => (prev + 1) % services.length);
+    }, 6000); // Change every 6 seconds
+
+    return () => clearInterval(interval);
+  }, [services.length]);
 
   const animateCounters = () => {
     let current = { events: 0, satisfaction: 0, experience: 0, shipping: 0 };
@@ -283,25 +321,57 @@ function Home() {
           <h2 className={`text-4xl font-bold text-center mb-12 transition-all duration-1000 ${servicesVisible ? 'opacity-100 animate-fade-in-down' : 'opacity-0'}`}>
             Nos Services
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {['Mariage', 'Anniversaire', 'Baptême', 'Funéraires'].map((service, index) => (
-              <Link key={service} to="/marketplace">
-                <div 
-                  className={`group relative overflow-hidden rounded-lg transition-all duration-1000 ${
-                    servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          
+          {/* Services Carousel */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {services.map((service, index) => {
+              // All 4 services are always visible in home
+              return (
+                <div
+                  key={service.id}
+                  onClick={() => navigate('/services')}
+                  className={`group relative h-80 rounded-lg cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-all duration-700 transform ${
+                    servicesVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
                   }`}
                   style={servicesVisible ? { transitionDelay: `${index * 50}ms` } : {}}
                 >
-                  <div className="bg-gradient-to-br from-gold/30 to-gold/10 h-48 rounded-lg mb-4 group-hover:shadow-xl group-hover:shadow-gold/30 transition-all duration-500 flex items-center justify-center overflow-hidden relative">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="relative text-center z-10 transform group-hover:scale-110 transition-transform duration-500">
-                      <FiGift className="text-gold text-6xl mx-auto mb-2 opacity-60 group-hover:opacity-100 transition-opacity" />
-                    </div>
+                  {/* Image Background */}
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Content */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+                    <h3 className="text-2xl font-bold mb-2 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                      {service.name}
+                    </h3>
+                    <p className="text-sm text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      {service.description}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-center group-hover:text-gold transition-colors duration-300">{service}</h3>
+
+                  {/* Arrow Icon */}
+                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <FiArrowRight className="text-white text-3xl" />
+                  </div>
                 </div>
-              </Link>
-            ))}
+              );
+            })}
+          </div>
+
+          {/* CTA Button */}
+          <div className="text-center">
+            <Link 
+              to="/services"
+              className="inline-block px-8 py-4 bg-dark text-white font-bold rounded-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:bg-gold"
+            >
+              Tous nos services
+            </Link>
           </div>
         </div>
       </section>

@@ -21,24 +21,28 @@ function Services() {
     {
       id: 1,
       name: 'Mariage',
+      image: '/images/services/mariage.svg',
       description: 'Services spécialisés pour créer la décoration de votre jour parfait.',
       includes: ['Décor salle', 'Table de mariage', 'Arche florale', 'Détails personnalisés']
     },
     {
       id: 2,
       name: 'Anniversaire',
+      image: '/images/services/anniversaire.svg',
       description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.',
       includes: ['Thématique personnalisée', 'Installation complète', 'Coordination', 'Démontage']
     },
     {
       id: 3,
       name: 'Baptême',
+      image: '/images/services/bapteme.svg',
       description: 'Services délicats et gracieux pour marquer cette belle occasion.',
       includes: ['Décor salle', 'Arrangements floraux', 'Éclairage doux', 'Mise en place']
     },
     {
       id: 4,
       name: 'Funéraires',
+      image: '/images/services/funeraires.svg',
       description: 'Services respectueux et dignifiés pour les cérémonies funéraires.',
       includes: ['Arrangement floral', 'Éclairage sobre', 'Draperies', 'Coordination']
     }
@@ -109,16 +113,27 @@ function Services() {
       </section>
 
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
           {services.map((service) => (
-            <div key={service.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
-              {/* Header */}
-              <div className="h-32 bg-gradient-to-r from-gold to-sky-light flex items-center p-6">
-                <h3 className="text-xl font-bold text-white">{service.name}</h3>
+            <div key={service.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
+              {/* Image Header */}
+              <div className="h-72 bg-gradient-to-r from-gold/10 to-sky-light/10 flex items-center justify-center overflow-hidden relative group-hover:scale-105 transition-transform duration-500">
+                <img 
+                  src={service.image} 
+                  alt={service.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+              </div>
+
+              {/* Title overlay on image */}
+              <div className="relative -mt-12 mx-6 bg-white rounded-lg shadow-lg p-4 z-10 border-b-4 border-gold">
+                <h3 className="text-2xl font-bold text-dark text-center">{service.name}</h3>
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-6 pt-2">
                 <p className="text-gray-600 mb-4">{service.description}</p>
 
                 {/* Includes */}
