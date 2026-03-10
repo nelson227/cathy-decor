@@ -165,6 +165,7 @@ function Portfolio() {
                       <img
                         src={getImageUrl(project.images[0])}
                         alt={project.name}
+                        crossOrigin="anonymous"
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     ) : null}
