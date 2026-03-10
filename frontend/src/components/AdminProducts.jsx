@@ -58,11 +58,11 @@ export default function AdminProducts() {
 
         const response = await api.post('/upload/single/decorations', formDataFile);
 
-        // La réponse du backend est: { success: true, data: { url, fileName, ... }, message }
+        // La réponse contient directement { url, fileName, size, folder }
         console.log('Upload response structure:', response.data);
         
-        // Accéder à l'URL depuis response.data.data.url
-        const uploadedUrl = response.data?.data?.url;
+        // Accéder à l'URL directement depuis response.data.url
+        const uploadedUrl = response.data?.url;
         if (uploadedUrl) {
           uploadedImages.push(uploadedUrl);
           console.log('✅ URL sauvegardée:', uploadedUrl);
