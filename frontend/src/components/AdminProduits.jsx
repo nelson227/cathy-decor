@@ -28,7 +28,6 @@ export default function AdminProduits() {
   const [formData, setFormData] = useState({
     category: 'buffets-rechauds',
     name: '',
-    shortDescription: '',
     description: '',
     price: '',
     images: [],
@@ -143,7 +142,6 @@ export default function AdminProduits() {
     try {
       const payload = {
         name: formData.name,
-        shortDescription: formData.shortDescription,
         description: formData.description,
         category: formData.category,
         price: parseFloat(formData.price),
@@ -175,7 +173,6 @@ export default function AdminProduits() {
     setFormData({
       category: produit.category,
       name: produit.name || '',
-      shortDescription: produit.shortDescription || '',
       description: produit.description || '',
       price: produit.price || '',
       images: produit.images || [],
@@ -203,7 +200,6 @@ export default function AdminProduits() {
     setFormData({
       category: 'buffets-rechauds',
       name: '',
-      shortDescription: '',
       description: '',
       price: '',
       images: [],
@@ -308,18 +304,7 @@ export default function AdminProduits() {
             </div>
 
             <div className="form-group">
-              <label>Description courte</label>
-              <input
-                type="text"
-                placeholder="Courte description pour les listes"
-                value={formData.shortDescription}
-                onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
-                className="form-control"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Description complète</label>
+              <label>Description</label>
               <textarea
                 placeholder="Décrivez le produit en détail..."
                 value={formData.description}
