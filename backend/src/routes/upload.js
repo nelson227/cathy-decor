@@ -40,7 +40,7 @@ router.post(
       const { originalname, buffer } = req.file;
 
       // Validate folder - add 'produits' as valid folder
-      const validFolders = ['decorations', 'salles', 'testimonials', 'products', 'produits'];
+      const validFolders = ['decorations', 'salles', 'testimonials', 'products', 'produits', 'services'];
       if (!validFolders.includes(folder)) {
         return res.status(400).json({
           success: false,

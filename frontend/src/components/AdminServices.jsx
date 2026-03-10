@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { FiTrash2, FiEdit2, FiPlus, FiX } from 'react-icons/fi';
+import { useState, useEffect, useRef } from 'react';
+import { FiTrash2, FiEdit2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -37,13 +37,17 @@ const DEFAULT_SERVICES = [
 export default function AdminServices() {
   const [services, setServices] = useState(DEFAULT_SERVICES);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    includes: ''
+    includes: '',
+    image: ''
   });
+  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
     // Les services sont en mémoire pour l'admin
@@ -54,8 +58,10 @@ export default function AdminServices() {
     setFormData({
       name: '',
       description: '',
-      includes: ''
+      includes: '',
+      image: ''
     });
+    setImagePreview('');
     setShowModal(true);
   };
 
@@ -64,14 +70,40 @@ export default function AdminServices() {
     setFormData({
       name: service.name,
       description: service.description,
-      includes: Array.isArray(service.includes) ? service.includes.join('\n') : ''
+      includes: Array.isArray(service.includes) ? service.includes.join('\n') : '',
+      image: service.image
     });
+    setImagePreview(service.image);
     setShowModal(true);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const uploadFormData = new FormData();
+      uploadFormData.append('image', file);
+      const response = await api.post('/upload/single/services', uploadFormData);
+      const uploadedUrl = response?.url || response?.data?.url;
+      
+      if (uploadedUrl) {
+        setFormData(prev => ({ ...prev, image: uploadedUrl }));
+        setImagePreview(uploadedUrl);
+        toast.success('Image téléchargée avec succès');
+      }
+    } catch (error) {
+      console.error('Erreur upload:', error);
+      toast.error('Erreur lors du téléchargement de l\'image');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSaveService = () => {
     if (!formData.name?.trim() || !formData.description?.trim()) {
-      toast.error('Veuillez remplir tous les champs');
+      toast.error('Veuillez remplir les champs obligatoires');
       return;
     }
 
@@ -84,7 +116,13 @@ export default function AdminServices() {
       // Modifier
       setServices(services.map(s =>
         s.id === editingService.id
-          ? { ...s, name: formData.name, description: formData.description, includes }
+          ? { 
+              ...s, 
+              name: formData.name, 
+              description: formData.description, 
+              includes,
+              image: formData.image
+            }
           : s
       ));
       toast.success('Service modifié avec succès');
@@ -94,7 +132,7 @@ export default function AdminServices() {
         id: Math.max(...services.map(s => s.id), 0) + 1,
         name: formData.name,
         description: formData.description,
-        image: '/images/services/default.png',
+        image: formData.image || '/images/services/default.png',
         includes
       };
       setServices([...services, newService]);
@@ -114,6 +152,10 @@ export default function AdminServices() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -191,15 +233,46 @@ export default function AdminServices() {
             </div>
 
             <div className="modal-body-services">
-              {editingService && editingService.image && (
-                <div className="modal-image-section">
-                  <img 
-                    src={editingService.image} 
-                    alt={editingService.name}
-                    className="modal-image"
-                  />
+              <div className="modal-image-section">
+                <div className="image-upload-area">
+                  {imagePreview ? (
+                    <div className="preview-image-wrapper">
+                      <img 
+                        src={imagePreview} 
+                        alt="Aperçu"
+                        className="preview-image"
+                      />
+                      <button
+                        type="button"
+                        className="change-image-btn"
+                        onClick={triggerFileInput}
+                        disabled={uploading}
+                      >
+                        <FiUpload size={16} /> Changer
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="upload-image-btn"
+                      onClick={triggerFileInput}
+                      disabled={uploading}
+                    >
+                      <FiUpload size={24} />
+                      <span>Ajouter une image</span>
+                    </button>
+                  )}
                 </div>
-              )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                  disabled={uploading}
+                />
+              </div>
+
               <div className="modal-form-section">
                 <div className="form-group">
                   <label>Nom du service *</label>
@@ -249,6 +322,7 @@ export default function AdminServices() {
               <button
                 className="btn-primary"
                 onClick={handleSaveService}
+                disabled={uploading}
               >
                 {editingService ? 'Modifier' : 'Ajouter'}
               </button>
