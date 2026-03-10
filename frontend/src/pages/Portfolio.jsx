@@ -20,22 +20,13 @@ function Portfolio() {
 
   useEffect(() => {
     fetchProjects();
-  }, [selectedCategory, searchTerm]);
+  }, []);
 
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      
-      if (selectedCategory !== 'tous') {
-        params.append('category', selectedCategory);
-      }
-      
-      if (searchTerm) {
-        params.append('search', searchTerm);
-      }
-
-      const response = await api.get(`/decorations?${params.toString()}`);
+      // Fetch ALL decorations, we'll filter on frontend
+      const response = await api.get('/decorations');
       setProjects(response.data || []);
     } catch (error) {
       console.error('Erreur:', error);
@@ -45,6 +36,16 @@ function Portfolio() {
       setLoading(false);
     }
   };
+
+  // Filter projects based on category and search term
+  const filteredProjects = projects.filter((project) => {
+    const matchCategory = selectedCategory === 'tous' || project.category === selectedCategory;
+    const matchSearch = !searchTerm || 
+      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.theme?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchCategory && matchSearch;
+  });
 
   const getImageUrl = (imgUrl) => {
     if (!imgUrl) return '';
