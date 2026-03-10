@@ -136,7 +136,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server - Connect to DB first, then listen
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 (async () => {
   try {
