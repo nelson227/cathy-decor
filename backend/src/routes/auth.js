@@ -20,8 +20,8 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     console.log('\n========== LOGIN ==========');
-    console.log('Email:', email);
-    console.log('Password:', password ? '(fourni)' : '(manquant)');
+    console.log('Email reçu:', email);
+    console.log('Password reçu:', password ? '(fourni)' : '(manquant)');
 
     // Validation
     if (!email || !password) {
@@ -32,12 +32,14 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Chercher utilisateur
+    // Chercher utilisateur (normaliser email)
     const emailLower = email.toLowerCase().trim();
+    console.log('🔍 Searching for email:', emailLower);
+    
     const user = await User.findOne({ where: { email: emailLower } });
 
     if (!user) {
-      console.log('❌ Utilisateur non trouvé');
+      console.log('❌ Utilisateur non trouvé. Email recherché:', emailLower);
       return res.status(401).json({
         success: false,
         message: 'Email ou mot de passe incorrect'
@@ -113,7 +115,7 @@ router.post('/login', async (req, res) => {
 router.get('/test', async (req, res) => {
   try {
     const user = await User.findOne({
-      where: { email: 'admin@cathyDecor.com' }
+      where: { email: 'admin@cathydecor.com' }
     });
 
     if (!user) {
@@ -134,6 +136,64 @@ router.get('/test', async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// SETUP - Créer admin si n'existe pas
+router.post('/setup', async (req, res) => {
+  try {
+    const { adminPassword = 'Admin123' } = req.body;
+
+    console.log('\n========== SETUP ADMIN ==========');
+    console.log('Check/Create admin user');
+
+    // Vérifier si admin existe
+    let admin = await User.findOne({
+      where: { email: 'admin@cathydecor.com' },
+      paranoid: false
+    });
+
+    if (admin) {
+      console.log('✅ Admin exists:', admin.email);
+      return res.json({
+        success: true,
+        message: 'Admin already exists',
+        admin: {
+          email: admin.email,
+          name: admin.name,
+          role: admin.role
+        }
+      });
+    }
+
+    // Créer admin
+    console.log('📝 Creating admin...');
+    admin = await User.create({
+      email: 'admin@cathydecor.com',
+      password: adminPassword,
+      name: 'Administrateur Cathy Décor',
+      role: 'admin',
+      active: true
+    });
+
+    console.log('✅ Admin created:', admin.email);
+    console.log('==================================\n');
+
+    return res.json({
+      success: true,
+      message: 'Admin created successfully',
+      admin: {
+        email: admin.email,
+        name: admin.name,
+        role: admin.role
+      }
+    });
+  } catch (error) {
+    console.error('❌ Setup error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Error creating admin: ' + error.message
+    });
   }
 });
 

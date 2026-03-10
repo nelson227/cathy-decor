@@ -16,7 +16,20 @@ const seedAdmin = async () => {
     await sequelize.sync({ alter: true });
     console.log('✅ Models Synchronized');
 
-    // Crate admin directly with plain password
+    // Remove existing admin (normalize email to lowercase)
+    const emailNormalized = 'admin@cathydecor.com';
+    const existingAdmin = await User.findOne({
+      where: { email: emailNormalized },
+      paranoid: false  // Include soft-deleted records
+    });
+    
+    if (existingAdmin) {
+      console.log('🗑️ Removing existing admin...');
+      await existingAdmin.destroy({ force: true });
+      console.log('✅ Existing admin removed');
+    }
+
+    // Create admin directly with plain password
     const password = 'Admin123';
     console.log(`📝 Creating admin with password: ${password}`);
 
@@ -40,6 +53,7 @@ const seedAdmin = async () => {
     process.exit(0);
   } catch (error) {
     console.error('❌ Seeding error:', error.message);
+    console.error('   Full error:', error);
     process.exit(1);
   }
 };
