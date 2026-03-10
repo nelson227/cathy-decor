@@ -29,9 +29,13 @@ export const connectDB = async () => {
     await sequelize.authenticate();
     console.log('✅ SQLite Database Connected');
     
-    // Import models AFTER sequelize is initialized
+    // Import ALL models AFTER sequelize is initialized
     const { default: User } = await import('../models/User.js');
     const { default: Decoration } = await import('../models/Decoration.js');
+    const { default: Salle } = await import('../models/Salle.js');
+    const { default: Commande } = await import('../models/Commande.js');
+    const { default: Testimonial } = await import('../models/Testimonial.js');
+    const { default: Favorite } = await import('../models/Favorite.js');
     
     // Sync all models
     await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
