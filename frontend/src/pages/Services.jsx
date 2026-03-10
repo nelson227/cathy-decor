@@ -21,28 +21,28 @@ function Services() {
     {
       id: 1,
       name: 'Mariage',
-      image: '/images/services/mariage.svg',
+      image: '/images/services/mariage.png',
       description: 'Services spécialisés pour créer la décoration de votre jour parfait.',
       includes: ['Décor salle', 'Table de mariage', 'Arche florale', 'Détails personnalisés']
     },
     {
       id: 2,
       name: 'Anniversaire',
-      image: '/images/services/anniversaire.svg',
+      image: '/images/services/anniversaire.png',
       description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.',
       includes: ['Thématique personnalisée', 'Installation complète', 'Coordination', 'Démontage']
     },
     {
       id: 3,
       name: 'Baptême',
-      image: '/images/services/bapteme.svg',
+      image: '/images/services/bapteme.png',
       description: 'Services délicats et gracieux pour marquer cette belle occasion.',
       includes: ['Décor salle', 'Arrangements floraux', 'Éclairage doux', 'Mise en place']
     },
     {
       id: 4,
       name: 'Funéraires',
-      image: '/images/services/funeraires.svg',
+      image: '/images/services/funeraires.png',
       description: 'Services respectueux et dignifiés pour les cérémonies funéraires.',
       includes: ['Arrangement floral', 'Éclairage sobre', 'Draperies', 'Coordination']
     }
