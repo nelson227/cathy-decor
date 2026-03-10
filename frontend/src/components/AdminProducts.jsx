@@ -3,6 +3,28 @@ import { FiTrash2, FiEdit2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
+export default function AdminProducts() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category: 'mariage',
+    theme: '',
+    images: []
+  });
+
+  const [filters, setFilters] = useState({
+    category: '',
+    search: ''
+  });
+
+  // Services disponibles (même que la page d'accueil)
+  const services = ['mariage', 'anniversaire', 'bapteme', 'funeraire'];
+
   const getImageUrl = (imgUrl) => {
     if (!imgUrl) return '';
     
@@ -20,27 +42,6 @@ import toast from 'react-hot-toast';
     }
     
     return imgUrl;
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [filters]);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      if (filters.category) params.append('category', filters.category);
-      if (filters.search) params.append('search', filters.search);
-
-      const response = await api.get(`/decorations?${params.toString()}`);
-      setProducts(response.data || []);
-    } catch (error) {
-      console.error('Erreur:', error);
-      toast.error('Erreur lors du chargement des décorations');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleImageUpload = async (e) => {
