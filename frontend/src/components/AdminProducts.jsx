@@ -208,6 +208,18 @@ export default function AdminProducts() {
             <h3>{editingId ? 'Modifier la décoration' : 'Ajouter une nouvelle décoration'}</h3>
 
             <div className="form-group">
+              <label>Nom de la décoration *</label>
+              <input
+                type="text"
+                placeholder="Ex: Mariage Blanc Et Or"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="form-control"
+              />
+            </div>
+
+            <div className="form-group">
               <label>Nom du service *</label>
               <select
                 required
