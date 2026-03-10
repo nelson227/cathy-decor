@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiTrendingUp, FiShoppingCart, FiUsers, FiCheckCircle } from 'react-icons/fi';
 import api from '../services/api';
 
-export default function AdminStats() {
+export default function AdminStats({ onTabChange }) {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalRevenue: 0,
     completedOrders: 0,
     pendingOrders: 0,
     totalProducts: 0,
-    totalSalles: 0
+    totalSalles: 0,
+    totalServices: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +35,10 @@ export default function AdminStats() {
       const sallesResponse = await api.get('/salles?limit=1000');
       const salles = sallesResponse.data || [];
 
+      // Fetch services
+      const servicesResponse = await api.get('/services');
+      const services = servicesResponse.data || [];
+
       // Calculate stats
       const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
       const completedOrders = orders.filter(o => o.status === 'completed').length;
@@ -43,7 +50,8 @@ export default function AdminStats() {
         completedOrders,
         pendingOrders,
         totalProducts: Array.isArray(products) ? products.length : 0,
-        totalSalles: Array.isArray(salles) ? salles.length : 0
+        totalSalles: Array.isArray(salles) ? salles.length : 0,
+        totalServices: Array.isArray(services) ? services.length : 0
       });
     } catch (error) {
       console.error('Erreur lors de la récupération des statistiques:', error);
@@ -89,6 +97,11 @@ export default function AdminStats() {
       title: 'Salles',
       value: stats.totalSalles,
       icon: '🏢'
+    },
+    {
+      title: 'Services',
+      value: stats.totalServices,
+      icon: '⚙️'
     }
   ];
 
@@ -137,13 +150,22 @@ export default function AdminStats() {
           <div className="recent-section">
             <h3>Actions Rapides</h3>
             <div className="quick-actions">
-              <button className="quick-action-btn">
+              <button 
+                className="quick-action-btn"
+                onClick={() => onTabChange?.('products')}
+              >
                 ➕ Ajouter une décoration
               </button>
-              <button className="quick-action-btn">
+              <button 
+                className="quick-action-btn"
+                onClick={() => onTabChange?.('salles')}
+              >
                 ➕ Ajouter une salle
               </button>
-              <button className="quick-action-btn">
+              <button 
+                className="quick-action-btn"
+                onClick={() => onTabChange?.('orders')}
+              >
                 📊 Voir toutes les commandes
               </button>
             </div>

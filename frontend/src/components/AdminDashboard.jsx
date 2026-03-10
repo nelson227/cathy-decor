@@ -7,6 +7,7 @@ import AdminOrders from './AdminOrders';
 import AdminStats from './AdminStats';
 import AdminSalles from './AdminSalles';
 import AdminProduits from './AdminProduits';
+import AdminServices from './AdminServices';
 import '../styles/admin.css';
 
 export default function AdminDashboard() {
@@ -29,7 +30,10 @@ export default function AdminDashboard() {
 
   const tabs = [
     { id: 'stats', label: 'Tableau de bord', icon: '📊' },
-    { id: 'products', label: 'Décorations', icon: '🎨' },    { id: 'produits', label: 'Marketplace', icon: '🛋️' },    { id: 'salles', label: 'Salles', icon: '🏢' },
+    { id: 'products', label: 'Décorations', icon: '🎨' },
+    { id: 'services', label: 'Services', icon: '⭐' },
+    { id: 'produits', label: 'Marketplace', icon: '🛋️' },
+    { id: 'salles', label: 'Salles', icon: '🏢' },
     { id: 'orders', label: 'Commandes', icon: '📦' }
   ];
 
@@ -84,8 +88,9 @@ export default function AdminDashboard() {
 
         {/* Content */}
         <main className="admin-content">
-          {activeTab === 'stats' && <AdminStats />}
+          {activeTab === 'stats' && <AdminStats onTabChange={setActiveTab} />}
           {activeTab === 'products' && <AdminProducts />}
+          {activeTab === 'services' && <AdminServices />}
           {activeTab === 'produits' && <AdminProduits />}
           {activeTab === 'salles' && <AdminSalles />}
           {activeTab === 'orders' && <AdminOrders />}
