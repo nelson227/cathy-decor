@@ -1,14 +1,21 @@
 import { Sequelize } from 'sequelize';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Ensure data directory exists
+const dataDir = path.join(__dirname, '../../data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
 // Initialize SQLite database
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.join(__dirname, '../../data/cathy-decor.db'),
+  storage: path.join(dataDir, 'cathy-decor.db'),
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   define: {
     timestamps: true,
