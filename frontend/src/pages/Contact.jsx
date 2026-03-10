@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiMapPin, FiPhone, FiMail, FiInstagram, FiFacebook } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -169,9 +170,38 @@ function Contact() {
           </div>
         </div>
 
-        {/* Map Placeholder */}
-        <div className="bg-gray-200 rounded-lg h-96 flex items-center justify-center">
-          <p className="text-gray-600">Carte Google Maps à intégrer</p>
+        {/* Map */}
+        <div className="rounded-lg overflow-hidden shadow-lg h-96">
+          <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'YOUR_GOOGLE_MAPS_API_KEY'}>
+            <GoogleMap
+              mapContainerStyle={{
+                width: '100%',
+                height: '100%'
+              }}
+              center={{
+                lat: 3.8480,
+                lng: 11.5021
+              }}
+              zoom={15}
+              options={{
+                styles: [
+                  {
+                    featureType: 'all',
+                    elementType: 'labels.text.fill',
+                    stylers: [{ color: '#333333' }]
+                  }
+                ]
+              }}
+            >
+              <Marker
+                position={{
+                  lat: 3.8480,
+                  lng: 11.5021
+                }}
+                title="Carrefour Mbog-Abang, Odza, Yaoundé, Cameroun"
+              />
+            </GoogleMap>
+          </LoadScript>
         </div>
       </div>
     </div>
