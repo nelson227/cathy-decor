@@ -268,10 +268,14 @@ export default function AdminProducts() {
                       <div key={index} className="image-item">
                         <img 
                           src={typeof img === 'string' ? 
-                            (img.startsWith('http') ? img : `/api${img}`) : 
-                            URL.createObjectURL(img)
+                            (img.startsWith('http') ? img : img) // Les URLs /uploads viennent du backend, on les utilise directement
+                            : URL.createObjectURL(img)
                           } 
                           alt={`Preview ${index}`}
+                          onError={(e) => {
+                            console.error(`Erreur chargement image ${index}:`, e);
+                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect fill="%23eee" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-family="sans-serif" font-size="14" fill="%23999" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
+                          }}
                         />
                         {index === 0 && <span className="badge-cover">Couverture</span>}
                         <button
