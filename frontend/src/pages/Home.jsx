@@ -90,25 +90,25 @@ function Home() {
     {
       id: 1,
       name: 'Mariage',
-      image: '/images/services/mariage.svg',
+      image: '/images/services/mariage.jpg',
       description: 'Services spécialisés pour créer la décoration de votre jour parfait.'
     },
     {
       id: 2,
       name: 'Anniversaire',
-      image: '/images/services/anniversaire.svg',
+      image: '/images/services/anniversaire.jpg',
       description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.'
     },
     {
       id: 3,
       name: 'Baptême',
-      image: '/images/services/bapteme.svg',
+      image: '/images/services/bapteme.jpg',
       description: 'Services délicats et gracieux pour marquer cette belle occasion.'
     },
     {
       id: 4,
       name: 'Funéraires',
-      image: '/images/services/funeraires.svg',
+      image: '/images/services/funeraires.jpg',
       description: 'Services respectueux et dignifiés pour les cérémonies funéraires.'
     }
   ];
