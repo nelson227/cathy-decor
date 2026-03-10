@@ -22,15 +22,15 @@ export default function AdminStats() {
       setLoading(true);
       // Fetch orders
       const ordersResponse = await api.get('/commandes');
-      const orders = ordersResponse.data.data || [];
+      const orders = ordersResponse.data || [];
 
       // Fetch products
-      const productsResponse = await api.get('/decorations');
-      const products = productsResponse.data.data || [];
+      const productsResponse = await api.get('/decorations?limit=1000');
+      const products = productsResponse.data || [];
 
       // Fetch salles
-      const sallesResponse = await api.get('/salles');
-      const salles = sallesResponse.data.data || [];
+      const sallesResponse = await api.get('/salles?limit=1000');
+      const salles = sallesResponse.data || [];
 
       // Calculate stats
       const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);

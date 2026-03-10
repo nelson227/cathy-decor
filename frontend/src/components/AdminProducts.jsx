@@ -27,8 +27,8 @@ export default function AdminProducts() {
   const fetchDecorations = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/decorations?limit=100');
-      setProducts(res.data?.data || []);
+      const res = await api.get('/decorations?limit=1000');
+      setProducts(res.data || []);
     } catch (error) {
       console.error('Erreur chargement décorations:', error);
     } finally {
@@ -148,7 +148,7 @@ export default function AdminProducts() {
       description: product.description,
       images: product.images || []
     });
-    setEditingId(product._id);
+    setEditingId(product.id);
     setShowForm(true);
   };
 
@@ -349,7 +349,7 @@ export default function AdminProducts() {
             </thead>
             <tbody>
               {products.map(product => (
-                <tr key={product._id}>
+                <tr key={product.id}>
                   <td>{product.category}</td>
                   <td>{product.theme || 'N/A'}</td>
                   <td>{product.description?.substring(0, 50)}...</td>
@@ -368,7 +368,7 @@ export default function AdminProducts() {
                     </button>
                     <button
                       className="btn-icon delete"
-                      onClick={() => handleDelete(product._id)}
+                      onClick={() => handleDelete(product.id)}
                       title="Supprimer"
                     >
                       <FiTrash2 />
