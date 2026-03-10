@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { FiTrash2, FiMinus, FiPlus } from 'react-icons/fi';
+import { FiTrash2, FiMinus, FiPlus, FiSend } from 'react-icons/fi';
 import { useCart } from '../hooks';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 function Cart() {
   const cart = useCart();
@@ -21,29 +23,41 @@ function Cart() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCheckout = (e) => {
+  const [sending, setSending] = useState(false);
+
+  const handleCheckout = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!formData.name || !formData.phone || !formData.email || !formData.eventDate || cart.items.length === 0) {
-      alert('Veuillez remplir tous les champs requis');
+      toast.error('Veuillez remplir tous les champs requis');
       return;
     }
 
-    // Créer message WhatsApp
-    const itemsList = cart.items.map(item => `- ${item.name} (x${item.quantity}) : ${(item.price * item.quantity).toLocaleString('fr-FR')} DH`).join('\n');
-    const message = `🎉 *COMMANDE CATHY DÉCOR*\n\n*Client:*\nNom: ${formData.name}\nTél: ${formData.phone}\nEmail: ${formData.email}\n\n*Événement:*\nType: ${formData.eventType}\nDate: ${formData.eventDate}\nLieu: ${formData.eventLocation}\nNombre d'invités: ${formData.guests || 'Non spécifié'}\n\n*Services demandés:*\n${itemsList}\n\n*Total: ${cart.getTotal().toLocaleString('fr-FR')} DH*\n\n*Notes: ${formData.notes || 'Aucune'}\n\nMerci!`;
-
-    // Créer lien WhatsApp
-    const whatsappNumber = '+212XXXXXXXXX'; // À remplacer
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-
-    // Rediriger vers WhatsApp
-    window.open(whatsappUrl, '_blank');
-
-    // Vider le panier
-    cart.clearCart();
-    alert('Commande envoyée! Vous serez redirigé vers WhatsApp.');
+    setSending(true);
+    try {
+      const response = await api.post('/whatsapp/send-order', {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        eventType: formData.eventType,
+        eventDate: formData.eventDate,
+        eventLocation: formData.eventLocation,
+        guests: formData.guests,
+        notes: formData.notes,
+        items: cart.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total: cart.getTotal()
+      });
+      toast.success(response.message || 'Commande envoyée avec succès !');
+      cart.clearCart();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Erreur lors de l\'envoi. Veuillez réessayer.');
+    } finally {
+      setSending(false);
+    }
   };
 
   if (cart.items.length === 0) {
@@ -244,8 +258,12 @@ function Cart() {
                   />
                 </div>
 
-                <button type="submit" className="w-full btn-primary mt-6">
-                  Envoyer par WhatsApp
+                <button type="submit" disabled={sending} className="w-full btn-primary mt-6 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                  {sending ? (
+                    <><svg className="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Envoi en cours...</>
+                  ) : (
+                    <><FiSend size={18} /> Envoyer la commande</>
+                  )}
                 </button>
 
                 <button

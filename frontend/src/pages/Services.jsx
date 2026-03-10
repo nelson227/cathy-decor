@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { FiX, FiUser, FiPhone, FiMapPin, FiUsers, FiMessageSquare, FiSend } from 'react-icons/fi';
+import { FiX, FiUser, FiPhone, FiMapPin, FiUsers, FiMessageSquare, FiSend, FiCheck } from 'react-icons/fi';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 function Services() {
   const [showModal, setShowModal] = useState(false);
@@ -73,43 +75,29 @@ function Services() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const sendToWhatsApp = () => {
-    // Numéro WhatsApp de la décoratrice (à configurer)
-    const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '+237600000000';
-    
-    // Construire le message formaté
-    const message = `
-🎉 *DEMANDE DE DEVIS - CATHY DÉCOR*
-━━━━━━━━━━━━━━━━━━━━━
+  const [sending, setSending] = useState(false);
 
-📋 *Type d'événement:* ${selectedService?.name}
-
-👤 *Informations client:*
-• Nom: ${formData.nom}
-• Prénom: ${formData.prenom}
-• Téléphone: ${formData.telephone}
-
-📅 *Détails de l'événement:*
-• Date souhaitée: ${formData.date || 'Non précisée'}
-• Nombre d'invités: ${formData.nombreInvites || 'Non précisé'}
-• Thème souhaité: ${formData.theme || 'À définir'}
-• Lieu: ${formData.lieu || 'Non précisé'}
-
-📝 *Description du besoin:*
-${formData.description || 'Aucune description fournie'}
-
-━━━━━━━━━━━━━━━━━━━━━
-Merci de me recontacter pour discuter de ce projet! 🙏
-    `.trim();
-
-    // Créer le lien WhatsApp
-    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
-    
-    // Ouvrir WhatsApp
-    window.open(whatsappUrl, '_blank');
-    
-    // Fermer le modal
-    closeModal();
+  const handleSubmitQuote = async () => {
+    setSending(true);
+    try {
+      const response = await api.post('/whatsapp/send-quote', {
+        serviceName: selectedService?.name,
+        nom: formData.nom,
+        prenom: formData.prenom,
+        telephone: formData.telephone,
+        date: formData.date,
+        nombreInvites: formData.nombreInvites,
+        theme: formData.theme,
+        lieu: formData.lieu,
+        description: formData.description
+      });
+      toast.success(response.message || 'Demande envoyée avec succès !');
+      closeModal();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Erreur lors de l\'envoi. Veuillez réessayer.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -338,16 +326,19 @@ Merci de me recontacter pour discuter de ce projet! 🙏
 
               {/* Submit Button */}
               <button
-                onClick={sendToWhatsApp}
-                disabled={!formData.nom || !formData.prenom || !formData.telephone}
-                className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg transition flex items-center justify-center gap-2"
+                onClick={handleSubmitQuote}
+                disabled={!formData.nom || !formData.prenom || !formData.telephone || sending}
+                className="w-full bg-gold hover:bg-gold/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg transition flex items-center justify-center gap-2"
               >
-                <FiSend size={20} />
-                Envoyer la demande via WhatsApp
+                {sending ? (
+                  <><svg className="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Envoi en cours...</>
+                ) : (
+                  <><FiSend size={20} /> Envoyer la demande</>
+                )}
               </button>
 
               <p className="text-xs text-gray-500 text-center">
-                En cliquant, vous serez redirigé vers WhatsApp avec votre demande pré-remplie
+                Votre demande sera traitée et nous vous recontacterons rapidement
               </p>
             </div>
           </div>

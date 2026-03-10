@@ -210,6 +210,7 @@ import favoriteRoutes from './routes/favorites.js';
 import uploadRoutes from './routes/upload.js';
 import statsRoutes from './routes/stats.js';
 import produitRoutes from './routes/produits.js';
+import whatsappRoutes from './routes/whatsapp.js';
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -222,6 +223,7 @@ app.use('/api/favorites', favoriteRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/produits', produitRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 // 404 Handler
 app.use((req, res) => {
