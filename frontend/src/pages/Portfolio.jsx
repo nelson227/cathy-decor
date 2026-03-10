@@ -46,14 +46,23 @@ function Portfolio() {
     }
   };
 
-  const filteredProjects = projects.filter(project => {
-    const matchesCategory = selectedCategory === 'tous' || project.category === selectedCategory;
-    const matchesSearch = !searchTerm || 
-      project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.theme?.toLowerCase().includes(searchTerm.toLowerCase());
+  const getImageUrl = (imgUrl) => {
+    if (!imgUrl) return '';
     
-    return matchesCategory && matchesSearch;
-  });
+    // Si c'est déjà une URL complète
+    if (imgUrl.startsWith('http')) {
+      return imgUrl;
+    }
+    
+    // Si c'est une URL relative /uploads/...
+    if (imgUrl.startsWith('/uploads')) {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const backendDomain = baseUrl.replace('/api', '');
+      return `${backendDomain}${imgUrl}`;
+    }
+    
+    return imgUrl;
+  };
 
   return (
     <div className="min-h-screen pt-20 pb-16">
@@ -152,7 +161,7 @@ function Portfolio() {
                   <div className="h-64 bg-gradient-to-br from-gold to-sky-light relative overflow-hidden">
                     {project.images && project.images.length > 0 ? (
                       <img
-                        src={project.images[0].startsWith('http') ? project.images[0] : `/api${project.images[0]}`}
+                        src={getImageUrl(project.images[0])}
                         alt={project.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />

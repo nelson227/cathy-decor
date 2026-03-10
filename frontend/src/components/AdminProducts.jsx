@@ -3,27 +3,24 @@ import { FiTrash2, FiEdit2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-export default function AdminProducts() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: 'mariage',
-    theme: '',
-    images: []
-  });
-
-  const [filters, setFilters] = useState({
-    category: '',
-    search: ''
-  });
-
-  // Services disponibles (même que la page d'accueil)
-  const services = ['mariage', 'anniversaire', 'bapteme', 'funeraire'];
+  const getImageUrl = (imgUrl) => {
+    if (!imgUrl) return '';
+    
+    // Si c'est déjà une URL complète
+    if (imgUrl.startsWith('http')) {
+      return imgUrl;
+    }
+    
+    // Si c'est une URL relative /uploads/...
+    if (imgUrl.startsWith('/uploads')) {
+      // Construire l'URL complète vers le backend
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const backendDomain = baseUrl.replace('/api', ''); // Enlever /api pour avoir le domaine
+      return `${backendDomain}${imgUrl}`;
+    }
+    
+    return imgUrl;
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -267,13 +264,10 @@ export default function AdminProducts() {
                     {formData.images.map((img, index) => (
                       <div key={index} className="image-item">
                         <img 
-                          src={typeof img === 'string' ? 
-                            (img.startsWith('http') ? img : img) // Les URLs /uploads viennent du backend, on les utilise directement
-                            : URL.createObjectURL(img)
-                          } 
+                          src={getImageUrl(img)} 
                           alt={`Preview ${index}`}
                           onError={(e) => {
-                            console.error(`Erreur chargement image ${index}:`, e);
+                            console.error(`Erreur chargement image ${index}:`, img);
                             e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect fill="%23eee" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-family="sans-serif" font-size="14" fill="%23999" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
                           }}
                         />
