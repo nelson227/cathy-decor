@@ -4,53 +4,32 @@ function Services() {
   const services = [
     {
       id: 1,
-      name: 'Décoration événementielle',
-      description: 'Transformation complète de votre espace avec nos services de décoration premium.',
-      includes: ['Conception du design', 'Installation', 'Démontage', 'Coordination'],
-      price: 'À partir de 2000 DH'
-    },
-    {
-      id: 2,
-      name: 'Organisation d\'événements',
-      description: 'Gestion complète de votre événement de A à Z.',
-      includes: ['Planning', 'Coordination vendors', 'Logistique', 'Suivi jour J'],
-      price: 'À partir de 5000 DH'
-    },
-    {
-      id: 3,
-      name: 'Décoration de mariage',
-      description: 'Services spécialisés pour mariages - bride et groom packages.',
+      name: 'Mariage',
+      description: 'Services spécialisés pour créer la décoration de votre jour parfait.',
       includes: ['Décor salle', 'Table de mariage', 'Arche florale', 'Détails personnalisés'],
       price: 'À partir de 3500 DH'
     },
     {
+      id: 2,
+      name: 'Anniversaire',
+      description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.',
+      includes: ['Thématique personnalisée', 'Installation complète', 'Coordination', 'Démontage'],
+      price: 'À partir de 2000 DH'
+    },
+    {
+      id: 3,
+      name: 'Baptême',
+      description: 'Services délicats et gracieux pour marquer cette belle occasion.',
+      includes: ['Décor salle', 'Arrangements floraux', 'Éclairage doux', 'Mise en place'],
+      price: 'À partir de 2500 DH'
+    },
+    {
       id: 4,
-      name: 'Décoration funéraire',
-      description: 'Services respectueux et dignifiés pour cérémonies funéraires.',
+      name: 'Funéraires',
+      description: 'Services respectueux et dignifiés pour les cérémonies funéraires.',
       includes: ['Arrangement floral', 'Éclairage sobre', 'Draperies', 'Coordination'],
       price: 'À partir de 1500 DH'
-    },
-    {
-      id: 5,
-      name: 'Service traiteur',
-      description: 'Partenaires traiteur pour repas et cocktails.',
-      includes: ['Menu personnalisé', 'Service', 'Matériel', 'Chef pâtissier'],
-      price: 'À partir de 150 DH/personne'
-    },
-    {
-      id: 6,
-      name: 'Location de matériel',
-      description: 'Tables, chaises, éclairage, sons et décors.',
-      includes: ['Livraison', 'Installation', 'Reprise', 'Support technique'],
-      price: 'À partir de 500 DH'
-    },
-    {
-      id: 7,
-      name: 'Planification complète',
-      description: 'Consultation et planification pour votre événement sur mesure.',
-      includes: ['Consultation gratuite', 'Devis détaillé', 'Timeline', 'Follow-up'],
-      price: 'Gratuit'
-    },
+    }
   ];
 
   return (
@@ -66,7 +45,7 @@ function Services() {
       </section>
 
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {services.map((service) => (
             <div key={service.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
               {/* Header */}
