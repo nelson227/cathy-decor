@@ -22,29 +22,25 @@ function Services() {
       id: 1,
       name: 'Mariage',
       description: 'Services spécialisés pour créer la décoration de votre jour parfait.',
-      includes: ['Décor salle', 'Table de mariage', 'Arche florale', 'Détails personnalisés'],
-      price: 'À partir de 3500 DH'
+      includes: ['Décor salle', 'Table de mariage', 'Arche florale', 'Détails personnalisés']
     },
     {
       id: 2,
       name: 'Anniversaire',
       description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.',
-      includes: ['Thématique personnalisée', 'Installation complète', 'Coordination', 'Démontage'],
-      price: 'À partir de 2000 DH'
+      includes: ['Thématique personnalisée', 'Installation complète', 'Coordination', 'Démontage']
     },
     {
       id: 3,
       name: 'Baptême',
       description: 'Services délicats et gracieux pour marquer cette belle occasion.',
-      includes: ['Décor salle', 'Arrangements floraux', 'Éclairage doux', 'Mise en place'],
-      price: 'À partir de 2500 DH'
+      includes: ['Décor salle', 'Arrangements floraux', 'Éclairage doux', 'Mise en place']
     },
     {
       id: 4,
       name: 'Funéraires',
       description: 'Services respectueux et dignifiés pour les cérémonies funéraires.',
-      includes: ['Arrangement floral', 'Éclairage sobre', 'Draperies', 'Coordination'],
-      price: 'À partir de 1500 DH'
+      includes: ['Arrangement floral', 'Éclairage sobre', 'Draperies', 'Coordination']
     }
   ];
 
@@ -136,11 +132,6 @@ function Services() {
                       </li>
                     ))}
                   </ul>
-                </div>
-
-                {/* Price */}
-                <div className="border-t pt-4 mb-4">
-                  <p className="text-lg font-bold text-gold">{service.price}</p>
                 </div>
 
                 {/* CTA */}
