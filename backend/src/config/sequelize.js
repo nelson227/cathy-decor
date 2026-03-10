@@ -25,6 +25,11 @@ if (process.env.DATABASE_URL) {
       underscored: true
     }
   });
+} else if (process.env.NODE_ENV === 'production') {
+  // Production without DATABASE_URL - error
+  console.error('❌ DATABASE_URL is required in production!');
+  console.error('Please configure PostgreSQL on Railway.');
+  process.exit(1);
 } else {
   // Local development with SQLite
   console.log('🔌 Using SQLite database (local development)...');
