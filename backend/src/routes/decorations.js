@@ -72,10 +72,10 @@ router.post('/', async (req, res) => {
   try {
     const { name, category, price, description, images, ...rest } = req.body;
 
-    if (!name || !category || !price) {
+    if (!name || !category) {
       return res.status(400).json({
         success: false,
-        message: 'Nom, catégorie et prix sont obligatoires'
+        message: 'Nom et catégorie sont obligatoires'
       });
     }
 

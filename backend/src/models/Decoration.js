@@ -41,7 +41,7 @@ const Decoration = sequelize.define('Decoration', {
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+    allowNull: true
   },
   options: {
     type: DataTypes.JSON,
