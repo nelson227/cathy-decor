@@ -283,7 +283,7 @@ function Home() {
       <section ref={portfolioRef} className="section-gap bg-gray-50">
         <div className="container-custom">
           <h2 className={`text-4xl font-bold text-center mb-12 transition-all duration-1000 ${portfolioVisible ? 'opacity-100 animate-fade-in-down' : 'opacity-0'}`}>
-            Notre Portfolio
+            Nos évènements les mieux notés
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {Array(6).fill(0).map((_, i) => (
@@ -298,7 +298,7 @@ function Home() {
                   <FiArrowRight className="text-white text-4xl opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all duration-500" />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-gray-600 font-medium">Projet {i + 1}</span>
+                  <span className="text-gray-600 font-medium">Événement {i + 1}</span>
                 </div>
               </div>
             ))}
