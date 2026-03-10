@@ -52,20 +52,15 @@ export default function AdminLogin() {
 
       if (response.success && response.data?.role === 'admin') {
         console.log('✅ Connexion valide, sauvegarde...');
+        console.log('   User data:', response.data);
         
-        // Store token
-        localStorage.setItem('cathy-auth-token', response.token);
-        console.log('✅ Token sauvegardé');
-        
-        // Update auth store
+        // Update auth store (sauvegarde aussi dans localStorage)
         login(response.data, response.token);
-        console.log('✅ Store mis à jour');
+        console.log('✅ Store mis à jour, naviguer...');
         
         toast.success('Connexion réussie!');
-        setTimeout(() => {
-          console.log('🔀 Redirection vers /admin...');
-          navigate('/admin');
-        }, 500);
+        // Navigate immédiatement sans timeout
+        navigate('/admin');
       } else if (response.success) {
         console.log('❌ Pas d\'accès admin');
         toast.error('Accès administrateur requis');

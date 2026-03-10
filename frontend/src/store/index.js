@@ -92,24 +92,34 @@ export const useCartStore = create(
   )
 );
 
-// Auth Store
-export const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem('cathy-auth-user')) || null,
-  token: localStorage.getItem('cathy-auth-token') || null,
-  isAuthenticated: !!localStorage.getItem('cathy-auth-token'),
-  
-  login: (user, token) => {
-    localStorage.setItem('cathy-auth-token', token);
-    localStorage.setItem('cathy-auth-user', JSON.stringify(user));
-    set({ user, token, isAuthenticated: true });
-  },
-  
-  logout: () => {
-    localStorage.removeItem('cathy-auth-token');
-    localStorage.removeItem('cathy-auth-user');
-    set({ user: null, token: null, isAuthenticated: false });
-  }
-}));
+// Auth Store with Persist
+export const useAuthStore = create(
+  persist(
+    (set, get) => ({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      
+      login: (user, token) => {
+        console.log('🔐 Zustand: Updating auth store with user:', user);
+        set({ user, token, isAuthenticated: true });
+        console.log('🔐 Zustand: Auth store updated');
+      },
+      
+      logout: () => {
+        set({ user: null, token: null, isAuthenticated: false });
+      }
+    }),
+    {
+      name: 'cathy-auth',
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated
+      })
+    }
+  )
+);
 
 // Favorites Store
 export const useFavoritesStore = create(
