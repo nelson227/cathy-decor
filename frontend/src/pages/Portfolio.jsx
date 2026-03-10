@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiFilter, FiSearch, FiX } from 'react-icons/fi';
+import { FiFilter, FiSearch, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -9,6 +9,8 @@ function Portfolio() {
   const [showFilters, setShowFilters] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const categories = [
     'tous',
@@ -64,6 +66,33 @@ function Portfolio() {
     }
     
     return imgUrl;
+  };
+
+  // Modal functions
+  const openProject = (project) => {
+    setSelectedProject(project);
+    setCurrentImageIndex(0);
+  };
+
+  const closeProject = () => {
+    setSelectedProject(null);
+    setCurrentImageIndex(0);
+  };
+
+  const nextImage = () => {
+    if (selectedProject && selectedProject.images) {
+      setCurrentImageIndex((prev) => 
+        prev < selectedProject.images.length - 1 ? prev + 1 : 0
+      );
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedProject && selectedProject.images) {
+      setCurrentImageIndex((prev) => 
+        prev > 0 ? prev - 1 : selectedProject.images.length - 1
+      );
+    }
   };
 
   return (
@@ -193,7 +222,10 @@ function Portfolio() {
                         </span>
                       )}
                     </div>
-                    <button className="w-full btn-primary text-sm">
+                    <button 
+                      className="w-full btn-primary text-sm"
+                      onClick={() => openProject(project)}
+                    >
                       Voir le projet
                     </button>
                   </div>
@@ -203,6 +235,137 @@ function Portfolio() {
           )}
         </div>
       </section>
+
+      {/* Project Modal */}
+      {selectedProject && (
+        <div 
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={closeProject}
+        >
+          <div 
+            className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-2xl font-bold text-dark">{selectedProject.name}</h2>
+              <button 
+                onClick={closeProject}
+                className="p-2 hover:bg-gray-100 rounded-full transition"
+              >
+                <FiX size={24} />
+              </button>
+            </div>
+
+            {/* Image Gallery */}
+            <div className="relative bg-gray-100">
+              {selectedProject.images && selectedProject.images.length > 0 ? (
+                <>
+                  <img
+                    src={getImageUrl(selectedProject.images[currentImageIndex])}
+                    alt={`${selectedProject.name} - Image ${currentImageIndex + 1}`}
+                    className="w-full h-[400px] object-contain"
+                  />
+                  
+                  {/* Navigation arrows */}
+                  {selectedProject.images.length > 1 && (
+                    <>
+                      <button
+                        onClick={prevImage}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition"
+                      >
+                        <FiChevronLeft size={24} />
+                      </button>
+                      <button
+                        onClick={nextImage}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition"
+                      >
+                        <FiChevronRight size={24} />
+                      </button>
+                      
+                      {/* Image counter */}
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
+                        {currentImageIndex + 1} / {selectedProject.images.length}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div className="h-[400px] flex items-center justify-center text-gray-400">
+                  Aucune image disponible
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnails */}
+            {selectedProject.images && selectedProject.images.length > 1 && (
+              <div className="flex gap-2 p-4 overflow-x-auto bg-gray-50">
+                {selectedProject.images.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${
+                      currentImageIndex === index ? 'border-gold' : 'border-transparent'
+                    }`}
+                  >
+                    <img
+                      src={getImageUrl(img)}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Project Details */}
+            <div className="p-6">
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="bg-gold text-white px-3 py-1 rounded-full text-sm capitalize">
+                  {selectedProject.category}
+                </span>
+                {selectedProject.theme && (
+                  <span className="bg-gray-200 text-dark px-3 py-1 rounded-full text-sm">
+                    {selectedProject.theme}
+                  </span>
+                )}
+              </div>
+              
+              {selectedProject.description && (
+                <p className="text-gray-600 mb-4">{selectedProject.description}</p>
+              )}
+
+              {selectedProject.included && selectedProject.included.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="font-semibold mb-2">Éléments inclus :</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.included.map((item, index) => (
+                      <span key={index} className="bg-gray-100 px-3 py-1 rounded text-sm">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-4 mt-6">
+                <a 
+                  href="/contact" 
+                  className="flex-1 btn-primary text-center"
+                >
+                  Demander un devis
+                </a>
+                <button 
+                  onClick={closeProject}
+                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CTA */}
       <section className="bg-gray-50 py-12">
