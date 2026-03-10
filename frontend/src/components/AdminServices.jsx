@@ -233,33 +233,36 @@ export default function AdminServices() {
             </div>
 
             <div className="modal-body-services">
-              <div className="modal-image-section">
-                <div className="image-upload-area">
+              {/* Image Upload Section */}
+              <div className="modal-image-upload-section">
+                <label className="image-section-label">Photo de couverture</label>
+                <div className="image-upload-container">
                   {imagePreview ? (
-                    <div className="preview-image-wrapper">
+                    <div className="image-preview-container">
                       <img 
                         src={imagePreview} 
-                        alt="Aperçu"
-                        className="preview-image"
+                        alt="Aperçu service"
+                        className="preview-image-large"
                       />
                       <button
                         type="button"
-                        className="change-image-btn"
+                        className="btn-change-image"
                         onClick={triggerFileInput}
                         disabled={uploading}
                       >
-                        <FiUpload size={16} /> Changer
+                        <FiUpload size={16} /> Changer la photo
                       </button>
                     </div>
                   ) : (
                     <button
                       type="button"
-                      className="upload-image-btn"
+                      className="btn-upload-image"
                       onClick={triggerFileInput}
                       disabled={uploading}
                     >
-                      <FiUpload size={24} />
-                      <span>Ajouter une image</span>
+                      <FiUpload size={32} />
+                      <span>Ajouter une photo</span>
+                      <small>PNG, JPG jusqu'à 5MB</small>
                     </button>
                   )}
                 </div>
@@ -273,6 +276,7 @@ export default function AdminServices() {
                 />
               </div>
 
+              {/* Form Section */}
               <div className="modal-form-section">
                 <div className="form-group">
                   <label>Nom du service *</label>
@@ -293,7 +297,7 @@ export default function AdminServices() {
                     value={formData.description}
                     onChange={handleInputChange}
                     placeholder="Décrivez le service en détail..."
-                    rows={5}
+                    rows={4}
                     className="form-textarea"
                   />
                 </div>
@@ -305,7 +309,7 @@ export default function AdminServices() {
                     value={formData.includes}
                     onChange={handleInputChange}
                     placeholder="Décor salle&#10;Table de mariage&#10;Arche florale&#10;Détails personnalisés"
-                    rows={4}
+                    rows={3}
                     className="form-textarea"
                   />
                 </div>
