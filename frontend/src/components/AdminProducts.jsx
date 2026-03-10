@@ -58,15 +58,16 @@ export default function AdminProducts() {
 
         const response = await api.post('/upload/single/decorations', formDataFile);
 
-        // La réponse est: { success, data: { url, fileName, ... }, message }
-        console.log('Upload response:', response.data);
+        // La réponse du backend est: { success: true, data: { url, fileName, ... }, message }
+        console.log('Upload response structure:', response.data);
         
-        if (response.data?.data?.url) {
-          uploadedImages.push(response.data.data.url);
-        } else if (response.data?.url) {
-          uploadedImages.push(response.data.url);
+        // Accéder à l'URL depuis response.data.data.url
+        const uploadedUrl = response.data?.data?.url;
+        if (uploadedUrl) {
+          uploadedImages.push(uploadedUrl);
+          console.log('✅ URL sauvegardée:', uploadedUrl);
         } else {
-          console.warn('URL non trouvée dans la réponse:', response.data);
+          console.warn('⚠️ URL non trouvée dans:', response.data);
         }
       }
 
