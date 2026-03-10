@@ -1,22 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiFilter, FiSearch, FiX } from 'react-icons/fi';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 function Portfolio() {
   const [selectedCategory, setSelectedCategory] = useState('tous');
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     'tous',
     'mariage',
     'anniversaire',
-    'baby-shower',
     'bapteme',
-    'funeraire',
-    'corporate',
-    'exterieur',
-    'interieur'
+    'funeraire'
   ];
+
+  useEffect(() => {
+    fetchProjects();
+  }, [selectedCategory, searchTerm]);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      
+      if (selectedCategory !== 'tous') {
+        params.append('category', selectedCategory);
+      }
+      
+      if (searchTerm) {
+        params.append('search', searchTerm);
+      }
+
+      const response = await api.get(`/decorations?${params.toString()}`);
+      setProjects(response.data || []);
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Erreur lors du chargement des projets');
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProjects = projects.filter(project => {
+    const matchesCategory = selectedCategory === 'tous' || project.category === selectedCategory;
+    const matchesSearch = !searchTerm || 
+      project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.theme?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="min-h-screen pt-20 pb-16">
@@ -96,38 +133,53 @@ function Portfolio() {
       {/* Gallery Grid */}
       <section className="py-12">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array(12)
-              .fill(0)
-              .map((_, i) => (
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Chargement des projets...</p>
+            </div>
+          ) : filteredProjects.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">Aucun projet trouvé</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project) => (
                 <div
-                  key={i}
+                  key={project._id}
                   className="group cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition"
                 >
                   {/* Image */}
                   <div className="h-64 bg-gradient-to-br from-gold to-sky-light relative overflow-hidden">
-                    <div className="absolute inset-0 bg-dark/50 group-hover:bg-dark/30 transition" />
-                    <div className="absolute inset-0 flex items-center justify-center text-white">
+                    {project.images && project.images.length > 0 ? (
+                      <img
+                        src={project.images[0].startsWith('http') ? project.images[0] : `/api${project.images[0]}`}
+                        alt={project.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : null}
+                    <div className="absolute inset-0 bg-dark/30 group-hover:bg-dark/20 transition" />
+                    <div className="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition">
                       <div className="text-center">
-                        <h3 className="text-2xl font-bold mb-2">Événement {i + 1}</h3>
-                        <p className="text-sm text-gray-300">Cliquez pour voir les détails</p>
+                        <p className="text-sm">Cliquez pour voir les détails</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Info */}
                   <div className="p-6 bg-white">
-                    <h3 className="text-xl font-bold mb-2">Décoration Mariage</h3>
+                    <h3 className="text-xl font-bold mb-2">{project.name}</h3>
                     <p className="text-gray-600 mb-4 line-clamp-2">
-                      Belle décoration pour mariage clasique et élégant.
+                      {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <span className="text-xs bg-gold bg-opacity-20 text-dark px-3 py-1 rounded-full">
-                        Mariage
+                      <span className="text-xs bg-gold bg-opacity-20 text-dark px-3 py-1 rounded-full capitalize">
+                        {project.category}
                       </span>
-                      <span className="text-xs bg-gold bg-opacity-20 text-dark px-3 py-1 rounded-full">
-                        Luxueux
-                      </span>
+                      {project.theme && (
+                        <span className="text-xs bg-gold bg-opacity-20 text-dark px-3 py-1 rounded-full">
+                          {project.theme}
+                        </span>
+                      )}
                     </div>
                     <button className="w-full btn-primary text-sm">
                       Voir le projet
@@ -135,12 +187,6 @@ function Portfolio() {
                   </div>
                 </div>
               ))}
-          </div>
-
-          {/* No Results */}
-          {false && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">Aucun projet trouvé</p>
             </div>
           )}
         </div>

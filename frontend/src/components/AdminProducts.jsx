@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiTrash2, FiEdit2, FiPlus } from 'react-icons/fi';
+import { FiTrash2, FiEdit2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -8,20 +8,22 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     category: 'mariage',
-    price: '',
-    images: [],
     theme: '',
-    colors: []
+    images: []
   });
 
   const [filters, setFilters] = useState({
     category: '',
     search: ''
   });
+
+  // Services disponibles (même que la page d'accueil)
+  const services = ['mariage', 'anniversaire', 'bapteme', 'funeraire'];
 
   useEffect(() => {
     fetchProducts();
@@ -34,37 +36,99 @@ export default function AdminProducts() {
       if (filters.category) params.append('category', filters.category);
       if (filters.search) params.append('search', filters.search);
 
-      const response = await api.get(`/decorations?${params}`);
-      setProducts(response.data);
+      const response = await api.get(`/decorations?${params.toString()}`);
+      setProducts(response.data || []);
     } catch (error) {
-      toast.error('Erreur lors du chargement des produits');
-      console.error(error);
+      console.error('Erreur:', error);
+      toast.error('Erreur lors du chargement des décorations');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    try {
+      setUploading(true);
+      const uploadedImages = [];
+
+      for (const file of files) {
+        const formDataFile = new FormData();
+        formDataFile.append('file', file);
+
+        const response = await api.post('/upload', formDataFile, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        uploadedImages.push(response.data.url || response.data.filename);
+      }
+
+      setFormData({
+        ...formData,
+        images: [...(formData.images || []), ...uploadedImages]
+      });
+
+      toast.success(`${uploadedImages.length} image(s) uploadée(s)`);
+    } catch (error) {
+      console.error('Erreur upload:', error);
+      toast.error('Erreur lors de l\'upload des images');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (index) => {
+    setFormData({
+      ...formData,
+      images: formData.images.filter((_, i) => i !== index)
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.name || !formData.description || formData.images.length === 0) {
+      toast.error('Remplissez tous les champs et ajoutez au moins une image');
+      return;
+    }
+
     try {
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        category: formData.category,
+        theme: formData.theme || '',
+        images: formData.images
+      };
+
       if (editingId) {
-        await api.put(`/decorations/${editingId}`, formData);
-        toast.success('Produit mis à jour');
+        await api.put(`/decorations/${editingId}`, payload);
+        toast.success('Décoration mise à jour');
       } else {
-        await api.post('/decorations', formData);
-        toast.success('Produit créé');
+        await api.post('/decorations', payload);
+        toast.success('Décoration ajoutée');
       }
+
       setShowForm(false);
       setEditingId(null);
       resetForm();
       fetchProducts();
     } catch (error) {
+      console.error('Erreur:', error);
       toast.error(error.response?.data?.message || 'Erreur');
     }
   };
 
   const handleEdit = (product) => {
-    setFormData(product);
+    setFormData({
+      name: product.name,
+      description: product.description,
+      category: product.category,
+      theme: product.theme || '',
+      images: product.images || []
+    });
     setEditingId(product._id);
     setShowForm(true);
   };
@@ -73,7 +137,7 @@ export default function AdminProducts() {
     if (window.confirm('Confirmer la suppression ?')) {
       try {
         await api.delete(`/decorations/${id}`);
-        toast.success('Produit supprimé');
+        toast.success('Décoration supprimée');
         fetchProducts();
       } catch (error) {
         toast.error('Erreur');
@@ -86,17 +150,10 @@ export default function AdminProducts() {
       name: '',
       description: '',
       category: 'mariage',
-      price: '',
-      images: [],
       theme: '',
-      colors: []
+      images: []
     });
   };
-
-  const categories = [
-    'mariage', 'anniversaire', 'baby-shower', 'bapteme', 
-    'funeraire', 'corporate', 'exterieur', 'interieur'
-  ];
 
   return (
     <div className="admin-section">
@@ -110,7 +167,7 @@ export default function AdminProducts() {
             setShowForm(!showForm);
           }}
         >
-          <FiPlus /> Ajouter
+          <FiPlus /> Ajouter une décoration
         </button>
       </div>
 
@@ -129,75 +186,183 @@ export default function AdminProducts() {
           className="filter-select"
         >
           <option value="">Toutes les catégories</option>
-          {categories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
+          {services.map(service => (
+            <option key={service} value={service}>
+              {service.charAt(0).toUpperCase() + service.slice(1)}
+            </option>
           ))}
         </select>
       </div>
 
       {/* Form */}
       {showForm && (
-        <form className="admin-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Nom</label>
-            <input
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
-          </div>
+        <div className="admin-form-wrapper">
+          <form className="admin-form" onSubmit={handleSubmit}>
+            <h3>{editingId ? 'Modifier la décoration' : 'Ajouter une nouvelle décoration'}</h3>
 
-          <div className="form-group">
-            <label>Description</label>
-            <textarea
-              required
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
-              rows={4}
-            />
-          </div>
-
-          <div className="form-row">
             <div className="form-group">
-              <label>Catégorie</label>
+              <label>Nom du service *</label>
               <select
+                required
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
+                className="form-control"
               >
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {services.map(service => (
+                  <option key={service} value={service}>
+                    {service.charAt(0).toUpperCase() + service.slice(1)}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label>Prix (DH)</label>
+              <label>Thème *</label>
               <input
-                type="number"
-                min="0"
-                step="100"
+                type="text"
+                placeholder="Ex: Romantique, Classique, Moderne"
                 required
-                value={formData.price}
-                onChange={(e) => setFormData({...formData, price: e.target.value})}
+                value={formData.theme}
+                onChange={(e) => setFormData({...formData, theme: e.target.value})}
+                className="form-control"
               />
             </div>
-          </div>
 
-          <div className="form-actions">
-            <button type="submit" className="btn btn-success">
-              {editingId ? 'Mettre à jour' : 'Créer'}
-            </button>
-            <button 
-              type="button" 
-              className="btn btn-secondary"
-              onClick={() => {
-                setShowForm(false);
-                resetForm();
-              }}
-            >
-              Annuler
-            </button>
+            <div className="form-group">
+              <label>Description *</label>
+              <textarea
+                placeholder="Décrivez la décoration..."
+                required
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                rows={4}
+                className="form-control"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Photos *</label>
+              <div className="upload-area">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="file-input"
+                  id="file-upload"
+                />
+                <label htmlFor="file-upload" className="upload-label">
+                  <FiUpload size={24} />
+                  <span>{uploading ? 'Upload en cours...' : 'Cliquez pour ajouter des photos'}</span>
+                </label>
+              </div>
+
+              {/* Images Preview */}
+              {formData.images && formData.images.length > 0 && (
+                <div className="images-preview">
+                  <p className="images-count">
+                    {formData.images.length} image(s) ajoutée(s)
+                    {formData.images.length > 0 && <span className="first-image-hint"> (la 1ère sera l'affichage principal)</span>}
+                  </p>
+                  <div className="images-grid">
+                    {formData.images.map((img, index) => (
+                      <div key={index} className="image-item">
+                        <img 
+                          src={typeof img === 'string' ? 
+                            (img.startsWith('http') ? img : `/api${img}`) : 
+                            URL.createObjectURL(img)
+                          } 
+                          alt={`Preview ${index}`}
+                        />
+                        {index === 0 && <span className="badge-cover">Couverture</span>}
+                        <button
+                          type="button"
+                          className="btn-remove"
+                          onClick={() => removeImage(index)}
+                          title="Supprimer cette image"
+                        >
+                          <FiX />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" className="btn btn-success">
+                {editingId ? 'Mettre à jour' : 'Créer la décoration'}
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowForm(false);
+                  resetForm();
+                }}
+              >
+                Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Products Table */}
+      <div className="admin-table">
+        {loading ? (
+          <p className="loading">Chargement...</p>
+        ) : products.length === 0 ? (
+          <p className="empty">Aucune décoration</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Thème</th>
+                <th>Description</th>
+                <th>Images</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map(product => (
+                <tr key={product._id}>
+                  <td>{product.category}</td>
+                  <td>{product.theme || 'N/A'}</td>
+                  <td>{product.description?.substring(0, 50)}...</td>
+                  <td>
+                    <span className="badge">
+                      {product.images?.length || 0} image(s)
+                    </span>
+                  </td>
+                  <td className="actions">
+                    <button
+                      className="btn-icon edit"
+                      onClick={() => handleEdit(product)}
+                      title="Modifier"
+                    >
+                      <FiEdit2 />
+                    </button>
+                    <button
+                      className="btn-icon delete"
+                      onClick={() => handleDelete(product._id)}
+                      title="Supprimer"
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
           </div>
         </form>
       )}
