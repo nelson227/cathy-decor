@@ -34,6 +34,7 @@ module.exports = {
         "slide-in-right": "slideInRight 0.8s ease-out forwards",
         "scale-in": "scaleIn 0.6s ease-out forwards",
         "rotate-in": "rotateIn 0.8s ease-out forwards",
+        "wing-flap": "wingFlap 0.6s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -73,6 +74,11 @@ module.exports = {
           "33%": { transform: "translate(30px, -50px) scale(1.1)" },
           "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
           "100%": { transform: "translate(0, 0) scale(1)" },
+        },
+        wingFlap: {
+          "0%": { transform: "rotateY(0deg)" },
+          "50%": { transform: "rotateY(15deg) scaleX(1.1)" },
+          "100%": { transform: "rotateY(0deg)" },
         },
       },
     },

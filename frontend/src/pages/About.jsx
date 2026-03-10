@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiAward, FiUsers, FiHeart } from 'react-icons/fi';
+import LogoAnimated from '../components/LogoAnimated';
 
 function About() {
   return (
@@ -28,7 +29,9 @@ function About() {
                 Notre engagement envers l'excellence et l'innovation nous a permis de devenir les décorateurs de référence dans la région.
               </p>
             </div>
-            <div className="h-96 bg-gradient-to-br from-gold to-sky-light rounded-lg"></div>
+            <div>
+              <LogoAnimated />
+            </div>
           </div>
 
           {/* Stats */}
