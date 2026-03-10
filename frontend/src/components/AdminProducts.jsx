@@ -10,10 +10,9 @@ export default function AdminProducts() {
   const [editingId, setEditingId] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
     category: 'mariage',
     theme: '',
+    description: '',
     images: []
   });
 
@@ -96,14 +95,14 @@ export default function AdminProducts() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.description || formData.images.length === 0) {
+    if (!formData.category || !formData.theme || !formData.description || formData.images.length === 0) {
       toast.error('Remplissez tous les champs et ajoutez au moins une image');
       return;
     }
 
     try {
       const payload = {
-        name: formData.name,
+        name: formData.theme,
         description: formData.description,
         category: formData.category,
         theme: formData.theme || '',
@@ -130,10 +129,9 @@ export default function AdminProducts() {
 
   const handleEdit = (product) => {
     setFormData({
-      name: product.name,
-      description: product.description,
       category: product.category,
       theme: product.theme || '',
+      description: product.description,
       images: product.images || []
     });
     setEditingId(product._id);
@@ -154,10 +152,9 @@ export default function AdminProducts() {
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      description: '',
       category: 'mariage',
       theme: '',
+      description: '',
       images: []
     });
   };
@@ -209,18 +206,6 @@ export default function AdminProducts() {
 
             <div className="form-group">
               <label>Nom du service *</label>
-              <input
-                type="text"
-                placeholder="Ex: Blanc Vert Or Emeraude"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="form-control"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Catégorie *</label>
               <select
                 required
                 value={formData.category}
