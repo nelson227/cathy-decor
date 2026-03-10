@@ -70,7 +70,7 @@ function Services() {
           {services.map((service) => (
             <div key={service.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
               {/* Header */}
-              <div className="h-32 bg-gradient-to-r from-gold to-rose flex items-center p-6">
+              <div className="h-32 bg-gradient-to-r from-gold to-sky-light flex items-center p-6">
                 <h3 className="text-xl font-bold text-white">{service.name}</h3>
               </div>
 

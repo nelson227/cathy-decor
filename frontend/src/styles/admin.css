@@ -10,7 +10,7 @@
 /* Header */
 .admin-header {
   background: white;
-  border-bottom: 2px solid #D4AF37;
+  border-bottom: 2px solid #003d82;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
@@ -60,7 +60,7 @@
 }
 
 .logout-btn {
-  background: #D4AF37;
+  background: #003d82;
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -74,7 +74,7 @@
 }
 
 .logout-btn:hover {
-  background: #c49d2e;
+  background: #002d5f;
   transform: translateY(-2px);
 }
 
@@ -124,13 +124,13 @@
 .admin-nav-item:hover {
   background: #f9f9f9;
   color: #1a1a1a;
-  border-left-color: #D4AF37;
+  border-left-color: #003d82;
 }
 
 .admin-nav-item.active {
-  background: #fffbf0;
-  color: #D4AF37;
-  border-left-color: #D4AF37;
+  background: #E0F2FE;
+  color: #003d82;
+  border-left-color: #003d82;
   font-weight: 600;
 }
 
@@ -193,12 +193,12 @@
 }
 
 .btn-primary {
-  background: #D4AF37;
+  background: #003d82;
   color: white;
 }
 
 .btn-primary:hover {
-  background: #c49d2e;
+  background: #002d5f;
   transform: translateY(-2px);
 }
 
@@ -315,8 +315,8 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #D4AF37;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  border-color: #003d82;
+  box-shadow: 0 0 0 3px rgba(0, 61, 130, 0.1);
 }
 
 .form-row {
@@ -419,7 +419,7 @@
 .stat-card {
   background: white;
   border: 1px solid #eee;
-  border-left: 4px solid #D4AF37;
+  border-left: 4px solid #003d82;
   padding: 1.5rem;
   border-radius: 0.5rem;
   display: flex;
@@ -481,7 +481,7 @@
 .resource-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #D4AF37;
+  color: #003d82;
 }
 
 /* Quick Actions */
@@ -503,9 +503,9 @@
 }
 
 .quick-action-btn:hover {
-  background: #D4AF37;
+  background: #003d82;
   color: white;
-  border-color: #D4AF37;
+  border-color: #003d82;
 }
 
 /* Modals */
@@ -558,7 +558,7 @@
 }
 
 .order-section h4 {
-  color: #D4AF37;
+  color: #003d82;
   margin-bottom: 1rem;
 }
 

@@ -57,7 +57,7 @@ export default function AdminStats() {
       title: 'Total Commandes',
       value: stats.totalOrders,
       icon: FiShoppingCart,
-      color: '#D4AF37'
+      color: '#003d82'
     },
     {
       title: 'Chiffre d\'affaires',

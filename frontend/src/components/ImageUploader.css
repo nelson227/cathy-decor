@@ -8,25 +8,25 @@
 
 /* Upload Zone */
 .upload-zone {
-  border: 2px dashed #d4af37;
+  border: 2px dashed #003d82;
   border-radius: 12px;
   padding: 40px 20px;
   text-align: center;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0.02) 100%);
+  background: linear-gradient(135deg, rgba(0, 61, 130, 0.05) 0%, rgba(0, 61, 130, 0.02) 100%);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .upload-zone:hover {
-  border-color: #d4af37;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+  border-color: #003d82;
+  background: linear-gradient(135deg, rgba(0, 61, 130, 0.1) 0%, rgba(0, 61, 130, 0.05) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(212, 175, 55, 0.15);
+  box-shadow: 0 8px 16px rgba(0, 61, 130, 0.15);
 }
 
 .upload-zone:active {
-  border-color: #b8930f;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.1) 100%);
+  border-color: #002d5f;
+  background: linear-gradient(135deg, rgba(0, 61, 130, 0.15) 0%, rgba(0, 61, 130, 0.1) 100%);
 }
 
 /* Upload Content */
@@ -40,7 +40,7 @@
 .upload-icon {
   width: 48px;
   height: 48px;
-  color: #d4af37;
+  color: #003d82;
   opacity: 0.8;
   margin-bottom: 8px;
 }
@@ -75,7 +75,7 @@
 .spinner {
   width: 40px;
   height: 40px;
-  color: #d4af37;
+  color: #003d82;
   animation: spin 1s linear infinite;
 }
 
@@ -99,7 +99,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #d4af37 0%, #f0d563 100%);
+  background: linear-gradient(90deg, #003d82 0%, #0EA5E9 100%);
   width: 0%;
   transition: width 0.3s ease;
   border-radius: 10px;
@@ -146,7 +146,7 @@
 .preview-button {
   padding: 6px 12px;
   font-size: 12px;
-  background: #d4af37;
+  background: #003d82;
   color: white;
   border: none;
   border-radius: 6px;

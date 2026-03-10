@@ -46,7 +46,7 @@ function Portfolio() {
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-6 py-3 bg-gold text-dark rounded-lg hover:bg-opacity-90 transition md:hidden"
+              className="flex items-center gap-2 px-6 py-3 bg-gold text-white rounded-lg hover:bg-opacity-90 transition md:hidden"
             >
               <FiFilter /> Filtres
             </button>
@@ -60,8 +60,8 @@ function Portfolio() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-6 py-2 rounded-lg capitalize transition ${
                   selectedCategory === cat
-                    ? 'bg-gold text-dark'
-                    : 'bg-gray-200 text-dark hover:bg-gold hover:text-dark'
+                    ? 'bg-gold text-white'
+                    : 'bg-gray-200 text-dark hover:bg-gold hover:text-white'
                 }`}
               >
                 {cat}
@@ -81,7 +81,7 @@ function Portfolio() {
                   }}
                   className={`px-4 py-2 rounded-lg capitalize transition text-left ${
                     selectedCategory === cat
-                      ? 'bg-gold text-dark'
+                      ? 'bg-gold text-white'
                       : 'bg-gray-200 text-dark'
                   }`}
                 >
@@ -105,7 +105,7 @@ function Portfolio() {
                   className="group cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition"
                 >
                   {/* Image */}
-                  <div className="h-64 bg-gradient-to-br from-gold to-rose relative overflow-hidden">
+                  <div className="h-64 bg-gradient-to-br from-gold to-sky-light relative overflow-hidden">
                     <div className="absolute inset-0 bg-dark/50 group-hover:bg-dark/30 transition" />
                     <div className="absolute inset-0 flex items-center justify-center text-white">
                       <div className="text-center">

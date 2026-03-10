@@ -28,7 +28,7 @@ function About() {
                 Notre engagement envers l'excellence et l'innovation nous a permis de devenir les décorateurs de référence dans la région.
               </p>
             </div>
-            <div className="h-96 bg-gradient-to-br from-gold to-rose rounded-lg"></div>
+            <div className="h-96 bg-gradient-to-br from-gold to-sky-light rounded-lg"></div>
           </div>
 
           {/* Stats */}

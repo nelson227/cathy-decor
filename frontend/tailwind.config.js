@@ -6,10 +6,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gold: "#D4AF37",
-        rose: "#F4D4D4",
-        beige: "#F5E6D3",
-        dark: "#1a1a1a",
+        gold: "#003d82",
+        rose: "#E0F2FE",
+        beige: "#F8FAFC",
+        dark: "#0F172A",
+        "navy": "#003d82",
+        "sky-light": "#0EA5E9",
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"],

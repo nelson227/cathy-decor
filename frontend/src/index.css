@@ -79,7 +79,7 @@ button {
 }
 
 .btn-primary {
-  @apply px-6 py-3 bg-gold text-dark rounded-lg hover:bg-opacity-90 transition;
+  @apply px-6 py-3 bg-gold text-white rounded-lg hover:bg-opacity-80 transition;
 }
 
 .btn-secondary {
@@ -91,7 +91,7 @@ button {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #D4AF37 0%, #F4D4D4 100%);
+  background: linear-gradient(135deg, #003d82 0%, #0EA5E9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -107,10 +107,10 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
+  background: #003d82;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #c49c2e;
+  background: #002d5f;
 }

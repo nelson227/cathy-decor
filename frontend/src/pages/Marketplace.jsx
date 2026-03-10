@@ -145,7 +145,7 @@ function Marketplace() {
                       onClick={() => setSelectedCategory(cat.id)}
                       className={`w-full text-left px-4 py-2 rounded-lg transition flex justify-between ${
                         selectedCategory === cat.id
-                          ? 'bg-gold text-dark font-bold'
+                          ? 'bg-gold text-white font-bold'
                           : 'hover:bg-gray-200'
                       }`}
                     >
@@ -238,7 +238,7 @@ function Marketplace() {
                           }}
                           className={`absolute top-4 right-4 p-2 rounded-full transition ${
                             favorites.isFavorite(product._id)
-                              ? 'bg-gold text-dark'
+                              ? 'bg-gold text-white'
                               : 'bg-white/80 hover:bg-gold hover:text-dark'
                           }`}
                         >

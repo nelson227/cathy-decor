@@ -151,7 +151,7 @@ function Home() {
           <div className="flex gap-6 justify-center flex-wrap animate-fade-in-delay-3 mb-12">
             <Link 
               to="/marketplace" 
-              className="group relative px-8 py-4 bg-gold text-dark font-bold rounded-lg overflow-hidden hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              className="group relative px-8 py-4 bg-gold text-white font-bold rounded-lg overflow-hidden hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Découvrir nos réalisations
@@ -160,7 +160,7 @@ function Home() {
             </Link>
             <Link 
               to="/marketplace" 
-              className="group px-8 py-4 border-2 border-gold text-gold font-bold rounded-lg hover:bg-gold hover:text-dark transition-all duration-300 hover:shadow-xl transform hover:scale-105"
+              className="group px-8 py-4 border-2 border-gold text-gold font-bold rounded-lg hover:bg-gold hover:text-white transition-all duration-300 hover:shadow-xl transform hover:scale-105"
             >
               Commencer une commande
             </Link>
@@ -204,7 +204,7 @@ function Home() {
               </div>
             </div>
             <div className={`transition-all duration-1000 delay-300 ${aboutVisible ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-8 scale-95'}`}>
-              <div className="bg-gradient-to-br from-gold/20 to-gold/40 h-96 rounded-lg flex items-center justify-center text-dark overflow-hidden shadow-lg">
+              <div className="bg-gradient-to-br from-gold/20 to-gold/40 h-96 rounded-lg flex items-center justify-center text-white overflow-hidden shadow-lg">
                 <div className="text-center">
                   <FiGift size={80} className="mx-auto mb-4 text-gold" />
                   <p className="text-lg font-bold">Votre événement, notre passion</p>
@@ -306,7 +306,7 @@ function Home() {
           <div className="text-center">
             <Link 
               to="/portfolio"
-              className="inline-block px-8 py-4 bg-gold text-dark font-bold rounded-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              className="inline-block px-8 py-4 bg-gold text-white font-bold rounded-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
             >
               Voir tout le portfolio
             </Link>
@@ -393,7 +393,7 @@ function Home() {
           </div>
         </div>
       </section>
-      <section className="section-gap bg-gradient-to-r from-gold via-gold to-gold/80 text-dark">
+      <section className="section-gap bg-gradient-to-r from-gold via-gold to-gold/80 text-white">
         <div className="container-custom text-center">
           <div className="animate-fade-in-down">
             <h2 className="text-4xl font-bold mb-6">Prêt à commencer?</h2>
@@ -403,7 +403,7 @@ function Home() {
           </div>
           <Link 
             to="/marketplace"
-            className="inline-block group px-8 py-4 bg-dark text-gold font-bold rounded-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 animate-fade-in-delay-1"
+            className="inline-block group px-8 py-4 bg-dark text-white font-bold rounded-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 animate-fade-in-delay-1"
           >
             <span className="flex items-center gap-2">
               Commander maintenant

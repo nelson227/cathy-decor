@@ -33,7 +33,7 @@ function Header() {
             {user && user.role === 'admin' && (
               <Link 
                 to="/admin" 
-                className="px-3 py-2 bg-gold text-dark rounded-lg font-semibold hover:opacity-90 transition"
+                className="px-3 py-2 bg-gold text-white rounded-lg font-semibold hover:opacity-90 transition"
                 title="Tableau de bord administrateur"
               >
                 🔐 Admin
@@ -42,7 +42,7 @@ function Header() {
             <Link to="/cart" className="relative">
               <FiShoppingCart size={24} className="hover:text-gold transition" />
               {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gold text-dark text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                <span className="absolute -top-2 -right-2 bg-gold text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                   {itemCount}
                 </span>
               )}
