@@ -72,8 +72,8 @@ app.use('/uploads', (req, res, next) => {
   next();
 }, express.static(path.join(__dirname, '../public/uploads')));
 
-// Dedicated image endpoint with explicit CORS headers
-app.get('/api/image/:folder/:filename', (req, res) => {
+// Dedicated image endpoint with explicit CORS headers - CORS SAFE
+app.get('/api/image/:folder/:filename', cors(), (req, res) => {
   try {
     const { folder, filename } = req.params;
     // Security: prevent directory traversal
@@ -81,14 +81,40 @@ app.get('/api/image/:folder/:filename', (req, res) => {
       return res.status(400).json({ error: 'Invalid path' });
     }
     
-    // Set CORS headers BEFORE sending file
+    // EXPLICIT CORS headers
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Max-Age', '86400');
+    res.header('Cache-Control', 'public, max-age=31536000');
     
     const filePath = path.join(__dirname, '../public/uploads', folder, filename);
-    res.sendFile(filePath);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    // Read and send file with proper content-type
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        return res.status(500).json({ error: 'Error reading file' });
+      }
+      
+      // Set content-type based on file extension
+      const ext = path.extname(filePath).toLowerCase();
+      const contentTypes = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp'
+      };
+      
+      res.header('Content-Type', contentTypes[ext] || 'application/octet-stream');
+      res.send(data);
+    });
   } catch (error) {
     console.error('Image serve error:', error);
     res.status(500).json({ error: 'Error serving image' });
