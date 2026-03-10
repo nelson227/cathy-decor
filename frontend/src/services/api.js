@@ -25,11 +25,24 @@ api.interceptors.request.use(
 
 // Handle responses
 api.interceptors.response.use(
-  response => response.data,
+  response => {
+    console.log('✅ [API] Response received:', response.status, response.data);
+    return response.data;
+  },
   error => {
+    console.error('❌ [API] Response error:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
+      url: error.config?.url
+    });
+    
     // Handle 401 - redirect to login
     if (error.response?.status === 401) {
+      console.log('❌ [API] 401 Unauthorized - clearing token and redirecting');
       localStorage.removeItem('cathy-auth-token');
+      localStorage.removeItem('cathy-auth-user');
       window.location.href = '/admin-login';
     }
     return Promise.reject(error);
