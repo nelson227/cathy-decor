@@ -56,7 +56,7 @@ export default function AdminProducts() {
 
       for (const file of files) {
         const formDataFile = new FormData();
-        formDataFile.append('file', file);
+        formDataFile.append('image', file); // ⚠️ IMPORTANT: doit être 'image' pas 'file'
 
         const response = await api.post('/upload/single/decorations', formDataFile);
 
