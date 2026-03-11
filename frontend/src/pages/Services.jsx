@@ -60,8 +60,18 @@ function Services() {
       setLoading(true);
       const response = await api.get('/services?limit=100');
       if (response.success && Array.isArray(response.data)) {
-        setServices(response.data);
-        console.log('✅ Services chargés:', response.data.length);
+        // Fusionner avec DEFAULT_SERVICES pour récupérer les includes
+        const enrichedServices = response.data.map(service => {
+          const defaultService = DEFAULT_SERVICES.find(
+            d => d.name.toLowerCase() === service.name?.toLowerCase()
+          );
+          return {
+            ...service,
+            includes: service.includes || defaultService?.includes || []
+          };
+        });
+        setServices(enrichedServices);
+        console.log('✅ Services chargés:', enrichedServices.length);
       } else {
         setServices(DEFAULT_SERVICES);
       }
@@ -166,7 +176,7 @@ function Services() {
                 <div className="mb-6">
                   <h4 className="font-bold text-sm mb-2 text-gold">Inclus:</h4>
                   <ul className="space-y-1 text-sm text-gray-600">
-                    {service.includes.map((item, i) => (
+                    {(service.includes || []).map((item, i) => (
                       <li key={i} className="flex items-center gap-2">
                         <span className="text-gold">✓</span>
                         {item}
