@@ -21,7 +21,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB max
+    fileSize: 10 * 1024 * 1024, // 10MB max
   }
 });
 
@@ -47,10 +47,10 @@ export const validateImageUpload = (req, res, next) => {
   }
 
   // Check file size
-  if (req.file.size > 5 * 1024 * 1024) {
+  if (req.file.size > 10 * 1024 * 1024) {
     return res.status(400).json({
       success: false,
-      message: 'La taille du fichier dépasse 5MB'
+      message: 'La taille du fichier dépasse 10MB'
     });
   }
 
@@ -76,10 +76,10 @@ export const validateImageUploadJSON = (req, res, next) => {
   const base64Data = req.body.image.split(',')[1];
   const estimatedSize = (base64Data.length * 3) / 4; // Approximate size
 
-  if (estimatedSize > 5 * 1024 * 1024) {
+  if (estimatedSize > 10 * 1024 * 1024) {
     return res.status(400).json({
       success: false,
-      message: 'La taille du fichier dépasse 5MB'
+      message: 'La taille du fichier dépasse 10MB'
     });
   }
 
@@ -97,10 +97,10 @@ export const validateMultipleImageUploads = (req, res, next) => {
 
   // Check each file size
   for (const file of req.files) {
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       return res.status(400).json({
         success: false,
-        message: `Le fichier ${file.originalname} dépasse 5MB`
+        message: `Le fichier ${file.originalname} dépasse 10MB`
       });
     }
   }
@@ -121,7 +121,7 @@ export const handleMulterError = (err, req, res, next) => {
     if (err.code === 'FILE_TOO_LARGE') {
       return res.status(400).json({
         success: false,
-        message: 'Fichier trop volumineux (max 5MB)'
+        message: 'Fichier trop volumineux (max 10MB)'
       });
     }
     if (err.code === 'LIMIT_FILE_COUNT') {

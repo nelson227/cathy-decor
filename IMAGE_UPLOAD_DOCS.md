@@ -115,7 +115,7 @@ uploadToCloudinary(file, folder)
 ### Validations automatiques
 
 - **Types acceptés:** JPEG, PNG, GIF, WebP
-- **Taille max:** 5 MB
+- **Taille max:** 10 MB (images), 100 MB (vidéos)
 - **Vérification** du fichier avant upload
 
 ---
@@ -222,7 +222,7 @@ const { uploadToCloudinary, error, resetError } = useImageUpload();
 // Erreurs possibles:
 // - "Aucun fichier sélectionné"
 // - "Format non supporté. Utilisez JPEG, PNG, GIF ou WebP"
-// - "Fichier trop volumineux (max 5MB)"
+// - "Fichier trop volumineux (max 10MB)"
 // - "Erreur upload Cloudinary"
 ```
 

@@ -39,10 +39,10 @@ export const useImageUpload = () => {
         throw new Error('Format non supporté. Utilisez JPEG, PNG, GIF, WebP pour les images ou MP4, WebM, MOV pour les vidéos');
       }
 
-      // Limite de taille : 5MB pour images, 100MB pour vidéos
-      const maxSize = isVideo ? 100 * 1024 * 1024 : 5 * 1024 * 1024;
+      // Limite de taille : 10MB pour images, 100MB pour vidéos
+      const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
       if (file.size > maxSize) {
-        throw new Error(`Fichier trop volumineux (max ${isVideo ? '100MB' : '5MB'})`);
+        throw new Error(`Fichier trop volumineux (max ${isVideo ? '100MB' : '10MB'})`);
       }
 
       // Direct upload to Cloudinary with unsigned preset

@@ -140,7 +140,7 @@ const ImageUploader = ({
               {multiple ? 'Déposez vos images ici' : 'Déposez votre image ici'}
             </p>
             <p className="upload-subtitle">
-              ou cliquez pour parcourir (max 5MB)
+              ou cliquez pour parcourir (max 10MB)
             </p>
             <p className="upload-formats">
               Formats: JPEG, PNG, GIF, WebP
