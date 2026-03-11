@@ -57,6 +57,35 @@ export const validateImageUpload = (req, res, next) => {
   next();
 };
 
+// Validation middleware for JSON base64 uploads
+export const validateImageUploadJSON = (req, res, next) => {
+  // If it's FormData, multer will handle validation
+  if (req.file) {
+    return next();
+  }
+
+  // For JSON base64 upload
+  if (!req.body.image || !req.body.image.startsWith('data:')) {
+    return res.status(400).json({
+      success: false,
+      message: 'Image base64 invalide'
+    });
+  }
+
+  // Estimate size from base64
+  const base64Data = req.body.image.split(',')[1];
+  const estimatedSize = (base64Data.length * 3) / 4; // Approximate size
+
+  if (estimatedSize > 5 * 1024 * 1024) {
+    return res.status(400).json({
+      success: false,
+      message: 'La taille du fichier dépasse 5MB'
+    });
+  }
+
+  next();
+};
+
 // Validation middleware for multiple uploads
 export const validateMultipleImageUploads = (req, res, next) => {
   if (!req.files || req.files.length === 0) {

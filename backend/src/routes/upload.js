@@ -3,6 +3,7 @@ import {
   uploadSingleImage,
   uploadMultipleImages,
   validateImageUpload,
+  validateImageUploadJSON,
   validateMultipleImageUploads,
   handleMulterError
 } from '../middleware/upload.js';
@@ -25,26 +26,50 @@ const isCloudinaryConfigured = () => {
 /**
  * POST /api/upload/single/:folder
  * Upload single image to Cloudinary (production) or local storage (dev)
+ * Accepts FormData (multipart) OR JSON with base64 image
  * Protected: Admin only
  */
 router.post(
   '/single/:folder',
   verifyToken,
   verifyAdmin,
-  uploadSingleImage,
-  validateImageUpload,
-  handleMulterError,
+  (req, res, next) => {
+    // Only use multer if not JSON body
+    if (req.is('multipart/form-data')) {
+      uploadSingleImage(req, res, next);
+    } else {
+      next();
+    }
+  },
+  validateImageUploadJSON,
   async (req, res) => {
     try {
       const { folder } = req.params;
-      const { originalname, buffer } = req.file;
+      let buffer, originalname;
 
-      // Validate folder - add 'produits' as valid folder
+      // Validate folder
       const validFolders = ['decorations', 'salles', 'testimonials', 'products', 'produits', 'services'];
       if (!validFolders.includes(folder)) {
         return res.status(400).json({
           success: false,
           message: 'Dossier invalide. Utilisez: ' + validFolders.join(', ')
+        });
+      }
+
+      // Handle both FormData and JSON base64
+      if (req.file) {
+        // FormData upload
+        buffer = req.file.buffer;
+        originalname = req.file.originalname;
+      } else if (req.body.image && req.body.image.startsWith('data:')) {
+        // Base64 JSON upload
+        const base64Data = req.body.image.split(',')[1];
+        buffer = Buffer.from(base64Data, 'base64');
+        originalname = req.body.fileName || 'image.jpg';
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Aucune image fournie (FormData ou base64)'
         });
       }
 

@@ -101,20 +101,43 @@ export default function AdminServices() {
 
     try {
       setUploading(true);
-      const uploadFormData = new FormData();
-      uploadFormData.append('image', file);
-      const response = await api.post('/upload/single/services', uploadFormData);
-      const uploadedUrl = response?.url || response?.data?.url;
       
-      if (uploadedUrl) {
-        setFormData(prev => ({ ...prev, image: uploadedUrl }));
-        setImagePreview(uploadedUrl);
-        toast.success('Image téléchargée avec succès');
-      }
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const base64 = event.target.result;
+          
+          // Send as JSON with base64 data
+          const response = await api.post('/upload/single/services', {
+            image: base64,
+            fileName: file.name,
+            mimeType: file.type,
+            size: file.size
+          });
+          
+          const uploadedUrl = response?.url || response?.data?.url;
+          
+          if (uploadedUrl) {
+            setFormData(prev => ({ ...prev, image: uploadedUrl }));
+            setImagePreview(uploadedUrl);
+            toast.success('Image téléchargée avec succès');
+          } else {
+            toast.error('URL image non retournée');
+          }
+        } catch (error) {
+          console.error('Erreur upload:', error);
+          toast.error('Erreur lors du téléchargement de l\'image');
+        } finally {
+          setUploading(false);
+        }
+      };
+      
+      reader.readAsDataURL(file);
+      
     } catch (error) {
-      console.error('Erreur upload:', error);
-      toast.error('Erreur lors du téléchargement de l\'image');
-    } finally {
+      console.error('Erreur préparation upload:', error);
+      toast.error('Erreur lors de la préparation du fichier');
       setUploading(false);
     }
   };
