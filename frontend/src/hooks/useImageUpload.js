@@ -95,6 +95,3 @@ export const useImageUpload = () => {
 };
 
 export default useImageUpload;
-};
-
-export default useImageUpload;
