@@ -1,103 +1,163 @@
-# Cathy Décor - Site Web Professionnel
+# Cathy Décor - Plateforme de Décoration Événementielle
 
-**Status** : 🔥 EN DÉVELOPPEMENT  
-**Version** : 1.0.0  
-**Date démarrage** : 6 mars 2026
+Site web complet pour une entreprise de décoration événementielle au Cameroun.
 
-Plateforme digitale complète pour une entreprise de décoration événementielle.
+## Fonctionnalités
 
-## 🎯 Fonctionnalités Principales
+- **Portfolio** - Galerie de projets avec filtres et demande de devis
+- **Marketplace** - Catalogue de produits de décoration
+- **Services** - Présentation des services (mariage, anniversaire, baptême, funéraire)
+- **Salles Partenaires** - Location de salles avec galerie photos et formulaire de réservation
+- **Panier** - Ajout au panier et commande via WhatsApp
+- **Dashboard Admin** - Gestion complète (produits, services, salles, commandes)
 
-- 🎨 **Portfolio multimédia** - Galeries photos/vidéos avec filtres dynamiques
-- 🛍️ **Marketplace** - Catalogue de services et décorations
-- 🛒 **Panier intégré** - Sélection et personnalisation
-- 💬 **Commande WhatsApp** - Envoi automatisé via WhatsApp
-- 📍 **Salles partenaires** - Localisation et réservation
-- 👤 **Dashboard Admin** - Gestion complète
-- 📱 **Mobile-first** - Responsive et optimisé
-- 🔍 **SEO optimisé** - Structure sémantique
+## Architecture
 
-## 📁 Structure du Projet
+```
+┌─────────────────────────────────────────────────────────┐
+│   Frontend (React + Vite)                               │
+│   Déployé sur: Vercel                                   │
+│   URL: https://cathy-decor.vercel.app                   │
+└───────────────────────┬─────────────────────────────────┘
+                        │ API REST
+                        ▼
+┌─────────────────────────────────────────────────────────┐
+│   Backend (Express.js + Sequelize)                      │
+│   Déployé sur: Railway                                  │
+│   Base de données: PostgreSQL                           │
+└───────────────────────┬─────────────────────────────────┘
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────────┐
+│   Cloudinary (Stockage Images)                          │
+│   Upload direct depuis le navigateur                    │
+│   Cloud Name: dc9z1q1c8                                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Technologies
+
+| Couche | Technologies |
+|--------|--------------|
+| **Frontend** | React 18, Vite, Tailwind CSS, React Router, Zustand |
+| **Backend** | Node.js 18+, Express.js, Sequelize ORM |
+| **Base de données** | PostgreSQL (production), SQLite (développement) |
+| **Images** | Cloudinary (upload direct avec preset non signé) |
+| **Déploiement** | Vercel (frontend), Railway (backend + PostgreSQL) |
+
+## Structure du Projet
 
 ```
 cathy-decor-site/
-├── frontend/              # Application React/Vite
+├── frontend/                 # Application React
 │   ├── src/
-│   │   ├── pages/        # Pages principales
-│   │   ├── components/   # Composants réutilisables
-│   │   ├── layouts/      # Layouts (Header, Footer)
-│   │   ├── hooks/        # Hooks personnalisés
-│   │   ├── services/     # Services API
-│   │   ├── store/        # Gestion d'état (Zustand)
-│   │   ├── styles/       # Styles globaux
-│   │   └── App.jsx
-│   ├── public/           # Assets statiques
-│   ├── package.json
-│   └── vite.config.js
+│   │   ├── pages/           # Pages (Home, Portfolio, Marketplace, etc.)
+│   │   ├── components/      # Composants (Header, Footer, Admin*)
+│   │   ├── hooks/           # Hooks personnalisés (useImageUpload, useCart)
+│   │   ├── services/        # Service API (axios)
+│   │   └── store/           # State management (Zustand)
+│   └── package.json
 │
-├── backend/              # API Node.js/Express
+├── backend/                  # API Express.js
 │   ├── src/
-│   │   ├── models/       # Schémas MongoDB (Mongoose)
-│   │   ├── routes/       # Routes API
-│   │   ├── controllers/  # Logique métier
-│   │   ├── middleware/   # Middleware (auth, validation)
-│   │   ├── services/     # Services (emails, WhatsApp)
+│   │   ├── models/          # Modèles Sequelize
+│   │   ├── routes/          # Routes API
+│   │   ├── middleware/      # Auth, validation, upload
+│   │   ├── services/        # Cloudinary, WhatsApp
 │   │   └── server.js
-│   ├── .env.example
-│   ├── package.json
-│   └── README.md
+│   └── package.json
 │
-├── docs/                 # Documentation
-│   ├── API.md           # Documentation API
-│   ├── DATABASE.md      # Schémas DB
-│   ├── SETUP.md         # Guide installation
-│   └── ARCHITECTURE.md  # Architecture technique
-│
-├── PROGRESSION.md       # Ce fichier de suivi
-└── README.md           # Readme principal
+└── docs/                     # Documentation technique
+    ├── API.md               # Documentation API
+    ├── ARCHITECTURE.md      # Architecture détaillée
+    └── DATABASE.md          # Schémas base de données
 ```
 
-## 🚀 Démarrage Rapide
+## Démarrage Rapide
 
-### Frontend
+### Prérequis
+- Node.js 18+
+- npm ou yarn
+
+### Installation
+
 ```bash
+# 1. Cloner le repo
+git clone https://github.com/nelson227/cathy-decor.git
+cd cathy-decor-site
+
+# 2. Installer les dépendances frontend
 cd frontend
 npm install
-npm run dev
-```
 
-### Backend
-```bash
-cd backend
+# 3. Installer les dépendances backend
+cd ../backend
 npm install
+```
+
+### Configuration
+
+**Backend** (`backend/.env`):
+```env
+PORT=5000
+NODE_ENV=development
+JWT_SECRET=votre_secret_jwt
+
+# PostgreSQL (production) ou rien pour SQLite (dev)
+DATABASE_URL=postgresql://...
+
+# Cloudinary (pour upload via backend - optionnel)
+CLOUDINARY_NAME=dc9z1q1c8
+CLOUDINARY_API_KEY=votre_api_key
+CLOUDINARY_API_SECRET=votre_api_secret
+```
+
+**Frontend** (`frontend/.env.local`):
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Lancer en développement
+
+```bash
+# Terminal 1 - Backend
+cd backend
+npm run dev
+
+# Terminal 2 - Frontend
+cd frontend
 npm run dev
 ```
 
-### Database
-MongoDB (local ou Atlas)
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000/api
 
-## 📚 Documentation
+## Connexion Admin
 
-- [API Reference](./docs/API.md)
-- [Database Schema](./docs/DATABASE.md)
-- [Setup Guide](./docs/SETUP.md)
-- [Architecture](./docs/ARCHITECTURE.md)
+- **URL**: `/admin-login`
+- **Email**: `admin@cathydecor.com`
+- **Mot de passe**: `Admin123`
 
-## 🔧 Technologies
+## Documentation
 
-**Frontend** : React 18, Vite, Tailwind CSS, React Router, Zustand  
-**Backend** : Node.js, Express, MongoDB, Mongoose  
-**Services** : Twilio (WhatsApp), Cloudinary (images)  
-**Hosting** : Vercel (frontend), Heroku/Railway (backend)
+| Document | Description |
+|----------|-------------|
+| [QUICK_START.md](./QUICK_START.md) | Guide de démarrage rapide |
+| [IMAGE_UPLOAD_DOCS.md](./IMAGE_UPLOAD_DOCS.md) | Système d'upload d'images |
+| [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) | Déploiement Vercel + Railway |
+| [docs/API.md](./docs/API.md) | Documentation API complète |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Architecture technique |
+| [docs/DATABASE.md](./docs/DATABASE.md) | Schémas base de données |
 
-## 📊 Progression
+## Déploiement
 
-Voir [PROGRESSION.md](./PROGRESSION.md) pour un suivi détaillé.
+Le projet est déployé sur:
+- **Frontend**: [Vercel](https://vercel.com) - Déploiement automatique depuis GitHub
+- **Backend**: [Railway](https://railway.app) - Node.js + PostgreSQL
+- **Images**: [Cloudinary](https://cloudinary.com) - CDN avec upload direct
 
-## 👤 Contact
+Voir [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) pour le guide complet.
 
-Cathy Décor - [Contact Info]
+## Auteur
 
----
-
-**Généré** : 6 mars 2026 | Maintenu par [Votre Équipe]
+Cathy Décor - Yaoundé, Cameroun

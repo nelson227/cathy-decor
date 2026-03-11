@@ -1,415 +1,317 @@
-# 📡 API Documentation - Cathy Décor
+# Documentation API - Cathy Décor
 
-**Base URL** : `http://localhost:5000/api`  
-**Version** : 1.0.0  
-**Authentication** : JWT Bearer Token
+**Base URL**: `http://localhost:5000/api` (dev) | `https://[votre-backend].railway.app/api` (prod)
 
----
+## Authentification
 
-## 📋 Endpoints (À implémenter)
-
-### 🔐 Authentification
-
-#### Register (Enregistrement)
+Toutes les routes admin nécessitent un token JWT dans le header:
 ```
-POST /auth/register
-Content-Type: application/json
-
-{
-  "email": "admin@cathydecor.com",
-  "password": "password123",
-  "name": "Admin Name"
-}
-
-Response: 
-{
-  "success": true,
-  "token": "eyJhbGc...",
-  "user": { "id", "email", "name" }
-}
-```
-
-#### Login
-```
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@cathydecor.com",
-  "password": "password123"
-}
-
-Response:
-{
-  "success": true,
-  "token": "eyJhbGc...",
-  "user": { "id", "email", "name" }
-}
-```
-
-#### Refresh Token
-```
-POST /auth/refresh
 Authorization: Bearer <token>
-
-Response:
-{
-  "success": true,
-  "token": "new_token"
-}
 ```
 
 ---
 
-### 🎨 Décorations (Produits/Services)
+## Endpoints
 
-#### Lister toutes les décorations
+### Authentification
+
+#### POST /auth/login
+Connexion utilisateur/admin.
+
+**Body:**
+```json
+{
+  "email": "admin@cathydecor.com",
+  "password": "Admin123"
+}
 ```
-GET /decorations?category=mariage&price_max=5000&page=1&limit=12
 
-Query Parameters:
-- category: string (mariage, anniversaire, etc)
-- theme: string
-- price_min: number
-- price_max: number
-- search: string
-- page: number (default: 1)
-- limit: number (default: 12)
-
-Response:
+**Réponse:**
+```json
 {
   "success": true,
-  "data": [
-    {
-      "_id": "...",
-      "name": "Décoration Mariage Gold",
-      "category": "mariage",
-      "price": 2500,
-      "images": ["url1", "url2"],
-      "rating": 4.8
-    }
-  ],
-  "pagination": {
-    "total": 45,
-    "page": 1,
-    "pages": 4
+  "token": "eyJhbGc...",
+  "user": {
+    "id": "uuid",
+    "email": "admin@cathydecor.com",
+    "name": "Admin",
+    "role": "admin"
   }
 }
 ```
 
-#### Obtenir une décoration
-```
-GET /decorations/:id
+#### POST /auth/register
+Créer un nouveau compte.
 
-Response:
+**Body:**
+```json
 {
-  "success": true,
-  "data": {
-    "_id": "...",
+  "email": "user@email.com",
+  "password": "password123",
+  "name": "Nom Utilisateur"
+}
+```
+
+---
+
+### Décorations (Portfolio)
+
+#### GET /decorations
+Liste toutes les décorations.
+
+**Query params:**
+- `category` - Filtrer par catégorie (mariage, anniversaire, bapteme, funeraire)
+- `limit` - Nombre de résultats (défaut: 50)
+
+**Réponse:**
+```json
+[
+  {
+    "id": "uuid",
     "name": "Décoration Mariage Gold",
     "category": "mariage",
-    "theme": "luxueux",
-    "colors": ["gold", "white"],
-    "description": "...",
-    "images": ["url1", "url2"],
-    "videos": ["video_url"],
-    "price": 2500,
-    "options": [
-      { "name": "Extension pour 50 invités", "price": 500 }
-    ],
-    "included": ["Décoration tables", "Arche floral", "Centre table"],
-    "rating": 4.8,
-    "reviewCount": 24
+    "theme": "Luxueux",
+    "description": "Description...",
+    "images": ["https://res.cloudinary.com/..."],
+    "price": 500000,
+    "included": ["Tables", "Chaises", "Arche"],
+    "available": true
   }
-}
+]
 ```
 
-#### Créer une décoration (Admin)
-```
-POST /decorations
-Authorization: Bearer <admin_token>
-Content-Type: application/json
+#### GET /decorations/:id
+Détails d'une décoration.
 
+#### POST /decorations (Admin)
+Créer une décoration.
+
+**Body:**
+```json
 {
-  "name": "Décoration Anniversaire",
-  "category": "anniversaire",
-  "theme": "moderne",
-  "price": 1500,
-  "description": "...",
-  "colors": ["rose", "gold"],
-  "included": ["Balloons", "Banners"],
-  "options": []
+  "name": "Nom",
+  "category": "mariage",
+  "theme": "Thème",
+  "description": "Description",
+  "images": ["url1", "url2"],
+  "price": 500000,
+  "included": ["Element 1", "Element 2"],
+  "available": true
 }
-
-Response: { "success": true, "data": { "_id": "...", ... } }
 ```
 
-#### Mettre à jour une décoration (Admin)
-```
-PUT /decorations/:id
-Authorization: Bearer <admin_token>
+#### PUT /decorations/:id (Admin)
+Modifier une décoration.
 
-{
-  "name": "Nouveau nom",
-  "price": 2000
-}
-
-Response: { "success": true, "data": { ... } }
-```
-
-#### Supprimer une décoration (Admin)
-```
-DELETE /decorations/:id
-Authorization: Bearer <admin_token>
-
-Response: { "success": true, "message": "Décoration supprimée" }
-```
+#### DELETE /decorations/:id (Admin)
+Supprimer une décoration.
 
 ---
 
-### 🏍️ Salles (Partenaires)
+### Services
 
-#### Lister les salles
-```
-GET /salles?city=Marrakech&capacity_min=50&capacity_max=200
+#### GET /services
+Liste tous les services.
 
-Response:
-{
-  "success": true,
-  "data": [
-    {
-      "_id": "...",
-      "name": "Salle Le Grand Palais",
-      "location": { "city": "Marrakech", "address": "..." },
-      "capacity": { "min": 50, "max": 300 },
-      "pricePerHour": 500,
-      "amenities": ["wifi", "parking", "kitchen"],
-      "images": ["url1", "url2"]
-    }
-  ]
-}
-```
-
-#### Obtenir détails d'une salle
-```
-GET /salles/:id
-
-Response:
-{
-  "success": true,
-  "data": {
-    "_id": "...",
-    "name": "Salle Le Grand Palais",
-    "description": "...",
-    "images": ["url1", "url2"],
-    "videos": ["video_url"],
-    "location": {
-      "city": "Marrakech",
-      "address": "123 Rue...",
-      "coordinates": { "lat": 31.6, "lng": -8.0 }
-    },
-    "capacity": { "min": 50, "max": 300 },
-    "pricePerHour": 500,
-    "pricePerDay": 3000,
-    "amenities": ["wifi", "parking", "kitchen", "ac"],
-    "contact": { "phone": "+212...", "email": "..." }
+**Réponse:**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "Décoration Mariage",
+    "slug": "mariage",
+    "description": "Description du service",
+    "image": "https://res.cloudinary.com/...",
+    "price": 500000,
+    "features": ["Feature 1", "Feature 2"]
   }
-}
+]
 ```
+
+#### GET /services/:id
+Détails d'un service.
+
+#### POST /services (Admin)
+Créer un service.
+
+#### PUT /services/:id (Admin)
+Modifier un service.
+
+#### DELETE /services/:id (Admin)
+Supprimer un service.
 
 ---
 
-### 🛒 Commandes (Orders)
+### Salles
 
-#### Créer une commande
+#### GET /salles
+Liste toutes les salles partenaires.
+
+**Réponse:**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "Salle des Fêtes Royal",
+    "description": "Description...",
+    "images": ["url1", "url2", "url3"],
+    "capacity": 500,
+    "location": "Yaoundé, Bastos",
+    "price": 250000,
+    "amenities": ["Parking", "Climatisation", "Cuisine"],
+    "available": true
+  }
+]
 ```
-POST /commandes
-Content-Type: application/json
 
+#### GET /salles/:id
+Détails d'une salle.
+
+#### POST /salles (Admin)
+Créer une salle.
+
+**Body:**
+```json
 {
-  "customer": {
-    "name": "Jean Dupont",
-    "phone": "+212 6XX XXX XXX",
-    "email": "jean@example.com"
-  },
-  "event": {
-    "type": "mariage",
-    "date": "2026-06-15",
-    "location": "Marrakech",
-    "guests": 150
-  },
+  "name": "Nom de la salle",
+  "description": "Description",
+  "images": ["url1", "url2"],
+  "capacity": 300,
+  "location": "Adresse",
+  "price": 200000,
+  "amenities": ["Parking", "Climatisation"],
+  "available": true
+}
+```
+
+#### PUT /salles/:id (Admin)
+Modifier une salle.
+
+#### DELETE /salles/:id (Admin)
+Supprimer une salle.
+
+---
+
+### Produits (Marketplace)
+
+#### GET /produits
+Liste tous les produits du marketplace.
+
+**Query params:**
+- `category` - Catégorie de produit
+- `minPrice`, `maxPrice` - Fourchette de prix
+
+**Réponse:**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "Bouquet de Fleurs",
+    "category": "fleurs",
+    "description": "Description",
+    "image": "https://res.cloudinary.com/...",
+    "price": 25000,
+    "stock": 50,
+    "available": true
+  }
+]
+```
+
+#### POST /produits (Admin)
+Créer un produit.
+
+#### PUT /produits/:id (Admin)
+Modifier un produit.
+
+#### DELETE /produits/:id (Admin)
+Supprimer un produit.
+
+---
+
+### Commandes
+
+#### GET /commandes (Admin)
+Liste toutes les commandes.
+
+**Query params:**
+- `status` - Filtrer par statut (pending, confirmed, completed, cancelled)
+
+#### POST /commandes
+Créer une commande.
+
+**Body:**
+```json
+{
   "items": [
-    {
-      "decorationId": "...",
-      "quantity": 1,
-      "options": ["Extension 50 invités"]
-    }
+    { "id": "uuid", "name": "Produit", "price": 25000, "quantity": 2 }
   ],
-  "notes": "Ajouter des touches personnelles"
-}
-
-Response:
-{
-  "success": true,
-  "data": {
-    "_id": "...",
-    "orderNumber": "CMD-20260306-001",
-    "total": 3000,
-    "status": "pending",
-    "whatsappLink": "https://api.whatsapp.com/send?phone=212xxxxxxxxx&text=..."
-  }
+  "customer": {
+    "name": "Nom Client",
+    "phone": "+237699999999",
+    "email": "client@email.com"
+  },
+  "deliveryAddress": "Adresse de livraison",
+  "notes": "Instructions spéciales"
 }
 ```
 
-#### Obtenir détails d'une commande
-```
-GET /commandes/:id
-
-Response:
-{
-  "success": true,
-  "data": {
-    "_id": "...",
-    "orderNumber": "CMD-20260306-001",
-    "customer": { "name": "Jean Dupont", ... },
-    "event": { "type": "mariage", "date": "2026-06-15", ... },
-    "items": [ ... ],
-    "total": 3000,
-    "status": "pending",
-    "createdAt": "2026-03-06T10:00:00Z"
-  }
-}
-```
-
-#### Lister les commandes (Admin)
-```
-GET /commandes?status=pending&page=1
-
-Response:
-{
-  "success": true,
-  "data": [ ... ],
-  "pagination": { "total": 25, "page": 1, "pages": 3 }
-}
-```
-
-#### Mettre à jour statut commande (Admin)
-```
-PUT /commandes/:id
-Authorization: Bearer <admin_token>
-
-{
-  "status": "confirmed"
-}
-
-Response: { "success": true, "data": { ... } }
-```
+#### PUT /commandes/:id (Admin)
+Mettre à jour le statut.
 
 ---
 
-### ⭐ Témoignages
+### Témoignages
 
-#### Lister les témoignages
-```
-GET /testimonials?verified=true&sort=rating
+#### GET /testimonials
+Liste les témoignages approuvés.
 
-Response:
+#### POST /testimonials
+Soumettre un témoignage.
+
+**Body:**
+```json
 {
-  "success": true,
-  "data": [
-    {
-      "_id": "...",
-      "author": "Client Satisfait",
-      "content": "Service excellent!",
-      "rating": 5,
-      "eventType": "mariage",
-      "verified": true
-    }
-  ]
+  "name": "Nom Client",
+  "eventType": "mariage",
+  "rating": 5,
+  "content": "Excellent service!"
+}
+```
+
+#### PUT /testimonials/:id (Admin)
+Approuver/modifier un témoignage.
+
+#### DELETE /testimonials/:id (Admin)
+Supprimer un témoignage.
+
+---
+
+### Stats (Admin)
+
+#### GET /stats
+Statistiques du dashboard admin.
+
+**Réponse:**
+```json
+{
+  "totalDecorations": 25,
+  "totalSalles": 8,
+  "totalCommandes": 150,
+  "totalProduits": 45,
+  "commandesPending": 12
 }
 ```
 
 ---
 
-### ❤️ Favoris
+## Codes d'erreur
 
-#### Ajouter aux favoris
-```
-POST /favorites
-Authorization: Bearer <token>
-
-{
-  "itemId": "...",
-  "itemType": "decoration"
-}
-
-Response: { "success": true }
-```
-
-#### Supprimer des favoris
-```
-DELETE /favorites/:itemId
-Authorization: Bearer <token>
-
-Response: { "success": true }
-```
-
----
-
-## 🔄 Status Codes
-
-| Code | Signification |
-|------|---------------|
-| 200 | OK - Requête réussie |
-| 201 | Created - Ressource créée |
-| 400 | Bad Request - Données invalides |
-| 401 | Unauthorized - Token manquant/invalide |
-| 403 | Forbidden - Permission refusée |
-| 404 | Not Found - Ressource non trouvée |
-| 500 | Server Error - Erreur serveur |
-
----
-
-## 🔐 Authentification
-
-Tous les endpoints protégés nécessitent un header:
-
-```
-Authorization: Bearer <jwt_token>
-```
-
-Le token est reçu lors du login et doit être stocké dans `localStorage`.
-
----
-
-## 📝 Erreur Formats
-
-```javascript
-{
-  "success": false,
-  "message": "Description de l'erreur",
-  "error": { 
-    "code": "VALIDATION_ERROR",
-    "details": { "field": "error message" }
-  }
-}
-```
-
----
-
-## 🚀 Implémentation Statut
-
-| Endpoint | Statut | Description |
-|----------|--------|-------------|
-| POST /auth/register | ⏳ TODO | Enregistrement |
-| POST /auth/login | ⏳ TODO | Connexion |
-| GET /decorations | ⏳ TODO | Lister produits |
-| POST /decorations | ⏳ TODO | Créer (Admin) |
-| GET /salles | ⏳ TODO | Lister salles |
-| POST /commandes | ⏳ TODO | Créer commande |
-| POST /favorites | ⏳ TODO | Ajouter favoris |
-
----
-
-**Dernière mise à jour** : 6 mars 2026  
-**Next Step** : Implémenter les endpoints dans server.js
+| Code | Description |
+|------|-------------|
+| 200 | Succès |
+| 201 | Créé avec succès |
+| 400 | Requête invalide |
+| 401 | Non authentifié |
+| 403 | Non autorisé |
+| 404 | Ressource non trouvée |
+| 500 | Erreur serveur |
