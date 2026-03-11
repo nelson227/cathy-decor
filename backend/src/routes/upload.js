@@ -12,7 +12,7 @@ import {
   deleteFile,
   getFileInfo
 } from '../services/localStorageService.js';
-import { uploadImage, uploadMultipleImages as uploadToCloudinary, deleteImage } from '../services/cloudinaryService.js';
+import { uploadImage, uploadMultipleImages as uploadToCloudinary, deleteImage, generateUploadSignature } from '../services/cloudinaryService.js';
 import { verifyToken, verifyAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -21,6 +21,51 @@ const router = express.Router();
 const isCloudinaryConfigured = () => {
   return !!(process.env.CLOUDINARY_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 };
+
+/**
+ * GET /api/upload/signature/:folder
+ * Get Cloudinary signature for direct frontend upload
+ * Protected: Admin only
+ */
+router.get(
+  '/signature/:folder',
+  verifyToken,
+  verifyAdmin,
+  (req, res) => {
+    try {
+      const { folder } = req.params;
+      
+      // Validate folder
+      const validFolders = ['decorations', 'salles', 'testimonials', 'products', 'produits', 'services'];
+      if (!validFolders.includes(folder)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Dossier invalide. Utilisez: ' + validFolders.join(', ')
+        });
+      }
+
+      if (!isCloudinaryConfigured()) {
+        return res.status(500).json({
+          success: false,
+          message: 'Cloudinary non configuré'
+        });
+      }
+
+      const signatureData = generateUploadSignature(folder);
+      
+      res.json({
+        success: true,
+        data: signatureData
+      });
+    } catch (error) {
+      console.error('Signature error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Erreur génération signature: ' + error.message
+      });
+    }
+  }
+);
 
 /**
  * POST /api/upload/single/:folder

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FiTrash2, FiEdit2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useImageUpload } from '../hooks/useImageUpload';
 
 const DEFAULT_SERVICES = [
   {
@@ -43,7 +44,9 @@ export default function AdminServices() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  
+  // Use the direct Cloudinary upload hook
+  const { uploading, uploadToCloudinary } = useImageUpload();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -80,19 +83,14 @@ export default function AdminServices() {
 
   useEffect(() => { fetchServices(); }, []);
 
-  // Upload identique à AdminProduits
+  // Upload direct vers Cloudinary (contourne HTTP/2 issues)
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
     try {
-      setUploading(true);
-      const file = files[0]; // Un seul fichier pour les services
-      const formDataUpload = new FormData();
-      formDataUpload.append('image', file);
-      
-      const response = await api.post('/upload/single/services', formDataUpload);
-      const uploadedUrl = response?.url || response?.data?.url;
+      const file = files[0];
+      const uploadedUrl = await uploadToCloudinary(file, 'services');
       
       if (uploadedUrl) {
         setFormData(prev => ({ ...prev, image: uploadedUrl }));
@@ -102,9 +100,7 @@ export default function AdminServices() {
       }
     } catch (error) {
       console.error('Erreur upload:', error);
-      toast.error('Erreur lors de l\'upload');
-    } finally {
-      setUploading(false);
+      toast.error(error.message || 'Erreur lors de l\'upload');
     }
   };
 

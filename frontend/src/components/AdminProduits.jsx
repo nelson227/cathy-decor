@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FiTrash2, FiEdit2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useImageUpload } from '../hooks/useImageUpload';
 
 // New categories matching the marketplace
 const CATEGORIES = [
@@ -19,7 +20,9 @@ export default function AdminProduits() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  
+  // Use the direct Cloudinary upload hook
+  const { uploading, uploadToCloudinary } = useImageUpload();
   
   // New characteristic management
   const [newCharacteristicKey, setNewCharacteristicKey] = useState('');
@@ -62,18 +65,15 @@ export default function AdminProduits() {
 
   useEffect(() => { fetchProduits(); }, []);
 
+  // Upload direct vers Cloudinary (contourne HTTP/2 issues)
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
     try {
-      setUploading(true);
       const uploadedImages = [];
       for (const file of files) {
-        const formDataUpload = new FormData();
-        formDataUpload.append('image', file);
-        const response = await api.post('/upload/single/produits', formDataUpload);
-        const uploadedUrl = response?.url || response?.data?.url;
+        const uploadedUrl = await uploadToCloudinary(file, 'produits');
         if (uploadedUrl) {
           uploadedImages.push(uploadedUrl);
         }
@@ -82,9 +82,7 @@ export default function AdminProduits() {
       toast.success(`${uploadedImages.length} photo(s) ajoutée(s)`);
     } catch (error) {
       console.error('Erreur upload:', error);
-      toast.error('Erreur lors de l\'upload');
-    } finally {
-      setUploading(false);
+      toast.error(error.message || 'Erreur lors de l\'upload');
     }
   };
 

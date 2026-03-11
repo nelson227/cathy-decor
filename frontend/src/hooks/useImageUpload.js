@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 import api from '../services/api';
 
 /**
- * Custom hook for image uploads to Cloudinary
- * Handles single and multiple file uploads with progress tracking
+ * Custom hook for direct Cloudinary uploads
+ * Bypasses backend multipart to avoid HTTP/2 issues
  */
 export const useImageUpload = () => {
   const [uploading, setUploading] = useState(false);
@@ -12,12 +11,12 @@ export const useImageUpload = () => {
   const [error, setError] = useState(null);
 
   /**
-   * Upload a single image
+   * Upload directly to Cloudinary
    * @param {File} file - The image file to upload
-   * @param {string} folder - Destination folder (decorations, salles, etc.)
-   * @returns {Promise<Object>} Upload result with url and publicId
+   * @param {string} folder - Destination folder (decorations, salles, services, etc.)
+   * @returns {Promise<string>} The uploaded image URL
    */
-  const uploadSingle = async (file, folder = 'products') => {
+  const uploadToCloudinary = async (file, folder = 'services') => {
     try {
       setUploading(true);
       setError(null);
@@ -30,183 +29,77 @@ export const useImageUpload = () => {
 
       const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        throw new Error('Format d\'image non supporté. Utilisez JPEG, PNG, GIF ou WebP');
+        throw new Error('Format non supporté. Utilisez JPEG, PNG, GIF ou WebP');
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        throw new Error('La taille du fichier dépasse 5MB');
+        throw new Error('Fichier trop volumineux (max 5MB)');
       }
 
-      // Create FormData
-      const formData = new FormData();
-      formData.append('image', file);
+      // Step 1: Get signature from backend (simple GET, no multipart)
+      const signatureResponse = await api.get(`/upload/signature/${folder}`);
+      
+      if (!signatureResponse.success || !signatureResponse.data) {
+        throw new Error('Impossible d\'obtenir la signature');
+      }
 
-      // Upload with progress tracking
-      const response = await api.post(`/upload/single/${folder}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(percentCompleted);
-        }
+      const { signature, timestamp, folder: cloudFolder, cloudName, apiKey } = signatureResponse.data;
+
+      // Step 2: Upload directly to Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('api_key', apiKey);
+      formData.append('timestamp', timestamp);
+      formData.append('signature', signature);
+      formData.append('folder', cloudFolder);
+      formData.append('quality', 'auto:good');
+      formData.append('format', 'webp');
+
+      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+      const response = await fetch(cloudinaryUrl, {
+        method: 'POST',
+        body: formData
       });
 
-      if (response.data.success) {
-        toast.success(response.data.message);
-        setUploading(false);
-        setUploadProgress(0);
-        return response.data.data;
-      } else {
-        throw new Error(response.data.message);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Erreur Cloudinary');
       }
+
+      const result = await response.json();
+      setUploadProgress(100);
+      
+      return result.secure_url;
+
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message;
-      setError(errorMessage);
-      toast.error(errorMessage);
+      setError(err.message);
+      throw err;
+    } finally {
       setUploading(false);
-      throw err;
     }
   };
 
   /**
-   * Upload multiple images
-   * @param {FileList|File[]} files - Multiple image files
-   * @param {string} folder - Destination folder
-   * @returns {Promise<Array>} Array of upload results
+   * Upload multiple files
    */
-  const uploadMultiple = async (files, folder = 'products') => {
-    try {
-      setUploading(true);
-      setError(null);
-      setUploadProgress(0);
-
-      // Validate files
-      if (!files || files.length === 0) {
-        throw new Error('Aucun fichier sélectionné');
-      }
-
-      if (files.length > 10) {
-        throw new Error('Maximum 10 images à la fois');
-      }
-
-      // Validate each file
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      for (let file of files) {
-        if (!validTypes.includes(file.type)) {
-          throw new Error(`Format non supporté: ${file.name}`);
-        }
-        if (file.size > 5 * 1024 * 1024) {
-          throw new Error(`${file.name}: dépasse 5MB`);
-        }
-      }
-
-      // Create FormData
-      const formData = new FormData();
-      for (let file of files) {
-        formData.append('images', file);
-      }
-
-      // Upload with progress tracking
-      const response = await api.post(`/upload/multiple/${folder}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(percentCompleted);
-        }
-      });
-
-      if (response.data.success) {
-        toast.success(response.data.message);
-        setUploading(false);
-        setUploadProgress(0);
-        return response.data.data;
-      } else {
-        throw new Error(response.data.message);
-      }
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message;
-      setError(errorMessage);
-      toast.error(errorMessage);
-      setUploading(false);
-      throw err;
+  const uploadMultiple = async (files, folder = 'services') => {
+    const urls = [];
+    for (const file of files) {
+      const url = await uploadToCloudinary(file, folder);
+      urls.push(url);
     }
-  };
-
-  /**
-   * Delete an image from Cloudinary
-   * @param {string} publicId - Cloudinary public ID
-   * @returns {Promise<Object>} Delete result
-   */
-  const deleteImage = async (publicId) => {
-    try {
-      setError(null);
-
-      const response = await api.delete(`/upload/${publicId}`);
-
-      if (response.data.success) {
-        toast.success(response.data.message);
-        return response.data;
-      } else {
-        throw new Error(response.data.message);
-      }
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message;
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    }
-  };
-
-  /**
-   * Get optimized image URLs for different sizes
-   * @param {string} publicId - Cloudinary public ID
-   * @returns {Promise<Object>} Gallery URLs (thumbnail, medium, large, original)
-   */
-  const getGalleryUrls = async (publicId) => {
-    try {
-      const response = await api.get(`/upload/gallery/${publicId}`);
-      if (response.data.success) {
-        return response.data.data;
-      } else {
-        throw new Error(response.data.message);
-      }
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message;
-      setError(errorMessage);
-      throw err;
-    }
-  };
-
-  /**
-   * Check if Cloudinary is configured
-   * @returns {Promise<boolean>} True if Cloudinary is configured
-   */
-  const checkCloudinary = async () => {
-    try {
-      const response = await api.get('/upload/health');
-      return response.data.cloudinaryConfigured;
-    } catch (err) {
-      console.error('Cloudinary check error:', err);
-      return false;
-    }
+    return urls;
   };
 
   return {
     uploading,
     uploadProgress,
     error,
-    uploadSingle,
+    uploadToCloudinary,
     uploadMultiple,
-    deleteImage,
-    getGalleryUrls,
-    checkCloudinary
+    // Alias for backwards compatibility
+    uploadSingle: uploadToCloudinary
   };
 };
 

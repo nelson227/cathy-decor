@@ -136,6 +136,34 @@ export const extractPublicId = (url) => {
   return match ? `${match[1]}/${match[2]}` : null;
 };
 
+/**
+ * Generate signed upload parameters for direct frontend upload
+ * @param {string} folder - Cloudinary folder
+ * @returns {Object} Signature params for frontend
+ */
+export const generateUploadSignature = (folder) => {
+  const timestamp = Math.round(new Date().getTime() / 1000);
+  const params = {
+    timestamp,
+    folder: `cathy-decor/${folder}`,
+    quality: 'auto:good',
+    format: 'webp'
+  };
+  
+  const signature = cloudinary.v2.utils.api_sign_request(
+    params,
+    process.env.CLOUDINARY_API_SECRET
+  );
+  
+  return {
+    signature,
+    timestamp,
+    folder: `cathy-decor/${folder}`,
+    cloudName: process.env.CLOUDINARY_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY
+  };
+};
+
 export default {
   uploadImage,
   deleteImage,
@@ -143,5 +171,6 @@ export default {
   generateOptimizedUrl,
   generateThumbnailUrl,
   generateGalleryUrls,
-  extractPublicId
+  extractPublicId,
+  generateUploadSignature
 };
