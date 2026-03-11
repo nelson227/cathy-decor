@@ -103,12 +103,24 @@ router.get('/', async (req, res) => {
       where,
       limit: Number(limit),
       offset: skip,
-      order: [['createdAt', 'DESC']]
+      // Order by custom priority
+      order: [
+        ['slug', 'ASC'] // Will naturally sort: anniversaire, bapteme, funeraires, mariage
+        // So we need custom sorting
+      ]
+    });
+
+    // Custom sort to match desired order: Mariage, Anniversaire, Baptême, Funéraires
+    const desiredOrder = ['mariage', 'anniversaire', 'bapteme', 'funeraires'];
+    const sortedRows = rows.sort((a, b) => {
+      const indexA = desiredOrder.indexOf(a.slug);
+      const indexB = desiredOrder.indexOf(b.slug);
+      return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
     });
 
     res.json({
       success: true,
-      data: rows.map(s => ({
+      data: sortedRows.map(s => ({
         id: s.id,
         name: s.name,
         slug: s.slug,
