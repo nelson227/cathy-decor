@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiX, FiUser, FiPhone, FiMapPin, FiUsers, FiMessageSquare, FiSend, FiCheck } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 function Services() {
   const [showModal, setShowModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -17,7 +19,8 @@ function Services() {
     description: ''
   });
 
-  const services = [
+  // Services par défaut (fallback)
+  const DEFAULT_SERVICES = [
     {
       id: 1,
       name: 'Mariage',
@@ -47,6 +50,29 @@ function Services() {
       includes: ['Arrangement floral', 'Éclairage sobre', 'Draperies', 'Coordination']
     }
   ];
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/services?limit=100');
+      if (response.success && Array.isArray(response.data)) {
+        setServices(response.data);
+        console.log('✅ Services chargés:', response.data.length);
+      } else {
+        setServices(DEFAULT_SERVICES);
+      }
+    } catch (error) {
+      console.error('Erreur fetch services:', error);
+      // Fallback to default services
+      setServices(DEFAULT_SERVICES);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openQuoteModal = (service) => {
     setSelectedService(service);

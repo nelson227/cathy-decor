@@ -50,8 +50,26 @@ export default function AdminServices() {
   const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
-    // Les services sont en mémoire pour l'admin
+    // Récupérer les services depuis l'API
+    fetchServices();
   }, []);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/services?limit=100');
+      if (response.success && Array.isArray(response.data)) {
+        setServices(response.data);
+        console.log('✅ Services chargés:', response.data.length);
+      }
+    } catch (error) {
+      console.error('Erreur fetch services:', error);
+      // Fallback to default services if API fails
+      setServices(DEFAULT_SERVICES);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openAddModal = () => {
     setEditingService(null);
@@ -101,7 +119,7 @@ export default function AdminServices() {
     }
   };
 
-  const handleSaveService = () => {
+  const handleSaveService = async () => {
     if (!formData.name?.trim() || !formData.description?.trim()) {
       toast.error('Veuillez remplir les champs obligatoires');
       return;
@@ -112,40 +130,65 @@ export default function AdminServices() {
       .map(item => item.trim())
       .filter(item => item);
 
-    if (editingService) {
-      // Modifier
-      setServices(services.map(s =>
-        s.id === editingService.id
-          ? { 
-              ...s, 
-              name: formData.name, 
-              description: formData.description, 
-              includes,
-              image: formData.image
-            }
-          : s
-      ));
-      toast.success('Service modifié avec succès');
-    } else {
-      // Ajouter
-      const newService = {
-        id: Math.max(...services.map(s => s.id), 0) + 1,
-        name: formData.name,
-        description: formData.description,
-        image: formData.image || '/images/services/default.png',
-        includes
-      };
-      setServices([...services, newService]);
-      toast.success('Service ajouté avec succès');
-    }
+    try {
+      setLoading(true);
 
-    setShowModal(false);
+      if (editingService) {
+        // Modifier
+        const response = await api.put(`/services/${editingService.id}`, {
+          name: formData.name,
+          description: formData.description,
+          includes,
+          image: formData.image
+        });
+
+        if (response.success) {
+          // Recharger les services depuis l'API
+          await fetchServices();
+          toast.success('Service modifié avec succès');
+        }
+      } else {
+        // Ajouter
+        const response = await api.post('/services', {
+          name: formData.name,
+          description: formData.description,
+          includes,
+          image: formData.image || '/images/services/default.png'
+        });
+
+        if (response.success) {
+          // Recharger les services depuis l'API
+          await fetchServices();
+          toast.success('Service ajouté avec succès');
+        }
+      }
+
+      setShowModal(false);
+    } catch (error) {
+      console.error('Erreur save service:', error);
+      toast.error('Erreur lors de la sauvegarde du service');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteService = (id) => {
+  const handleDeleteService = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
-      setServices(services.filter(s => s.id !== id));
-      toast.success('Service supprimé avec succès');
+      try {
+        setLoading(true);
+        const response = await api.delete(`/services/${id}`);
+
+        if (response.success) {
+          // Recharger les services
+          await fetchServices();
+          toast.success('Service supprimé avec succès');
+        }
+      } catch (error) {
+        console.error('Erreur delete service:', error);
+        toast.error('Erreur lors de la suppression du service');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

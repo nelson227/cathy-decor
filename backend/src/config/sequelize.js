@@ -115,6 +115,14 @@ export const connectDB = async () => {
       console.error('❌ Produit model error:', error.message);
       throw error;
     }
+
+    try {
+      console.log('📦 Loading Service model...');
+      await import('../models/Service.js');
+    } catch (error) {
+      console.error('❌ Service model error:', error.message);
+      throw error;
+    }
     
     console.log('🔄 Synchronizing database models...');
     // Force sync in production to ensure table exists  
