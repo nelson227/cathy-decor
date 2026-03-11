@@ -205,6 +205,23 @@ router.post('/', async (req, res) => {
 
     const slug = generateSlug(name);
 
+    // Check if name or slug already exists
+    const existing = await Service.findOne({
+      where: {
+        [require('sequelize').Op.or]: [
+          { name },
+          { slug }
+        ]
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Un service avec le nom "${name}" existe déjà` 
+      });
+    }
+
     const service = await Service.create({
       name,
       slug,
