@@ -22,6 +22,7 @@ function Home() {
   const [servicesVisible, setServicesVisible] = useState(false);
   const [portfolioVisible, setPortfolioVisible] = useState(false);
   const [testimonialsVisible, setTestimonialsVisible] = useState(false);
+  const [services, setServices] = useState([]);
 
   // Animer les compteurs au scroll
   useEffect(() => {
@@ -85,33 +86,31 @@ function Home() {
     return () => observer.disconnect();
   }, []);
 
-  // Services data
-  const services = [
-    {
-      id: 1,
-      name: 'Mariage',
-      image: '/images/services/mariage.png',
-      description: 'Services spécialisés pour créer la décoration de votre jour parfait.'
-    },
-    {
-      id: 2,
-      name: 'Anniversaire',
-      image: '/images/services/anniversaire.png',
-      description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.'
-    },
-    {
-      id: 3,
-      name: 'Baptême',
-      image: '/images/services/bapteme.png',
-      description: 'Services délicats et gracieux pour marquer cette belle occasion.'
-    },
-    {
-      id: 4,
-      name: 'Funéraires',
-      image: '/images/services/funeraires.png',
-      description: 'Services respectueux et dignifiés pour les cérémonies funéraires.'
-    }
-  ];
+  // Fetch services from API
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await api.get('/services');
+        if (response.data && response.data.length > 0) {
+          // Trier par ordre et prendre les 4 premiers
+          const sortedServices = response.data
+            .sort((a, b) => (a.ordre || 0) - (b.ordre || 0))
+            .slice(0, 4);
+          setServices(sortedServices);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des services:', error);
+        // Fallback: services par défaut
+        setServices([
+          { id: 1, nom: 'Mariage', image: '/images/services/mariage.png', description: 'Services spécialisés pour créer la décoration de votre jour parfait.' },
+          { id: 2, nom: 'Anniversaire', image: '/images/services/anniversaire.png', description: 'Décoration festive et élégante pour célébrer vos moments spéciaux.' },
+          { id: 3, nom: 'Baptême', image: '/images/services/bapteme.png', description: 'Services délicats et gracieux pour marquer cette belle occasion.' },
+          { id: 4, nom: 'Funéraires', image: '/images/services/funeraires.png', description: 'Services respectueux et dignifiés pour les cérémonies funéraires.' }
+        ]);
+      }
+    };
+    fetchServices();
+  }, []);
 
   // Fetch decorations from portfolio
   useEffect(() => {
@@ -344,8 +343,8 @@ function Home() {
                 >
                   {/* Image Background */}
                   <img
-                    src={service.image}
-                    alt={service.name}
+                    src={service.image || '/images/services/default.png'}
+                    alt={service.nom || service.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
 
@@ -355,7 +354,7 @@ function Home() {
                   {/* Content */}
                   <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
                     <h3 className="text-2xl font-bold mb-2 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                      {service.name}
+                      {service.nom || service.name}
                     </h3>
                     <p className="text-sm text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                       {service.description}
