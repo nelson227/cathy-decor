@@ -87,7 +87,9 @@ router.get('/:id', async (req, res) => {
 // CREATE new salle
 router.post('/', async (req, res) => {
   try {
-    const { name, description, city, capacityMin, capacityMax, price, image } = req.body;
+    const { name, description, city, address, capacityMin, capacityMax, price, images, parking, ac, kitchen, outdoor, wifi, accessibility } = req.body;
+
+    console.log('Creating salle with:', { name, city, capacityMin, capacityMax });
 
     if (!name || !city) {
       return res.status(400).json({
@@ -100,10 +102,17 @@ router.post('/', async (req, res) => {
       name,
       description,
       city,
-      capacityMin,
-      capacityMax,
-      price,
-      image
+      address,
+      capacityMin: parseInt(capacityMin) || 0,
+      capacityMax: parseInt(capacityMax) || 0,
+      price: parseFloat(price) || 0,
+      images: images || [],
+      parking: parking || false,
+      ac: ac || false,
+      kitchen: kitchen || false,
+      outdoor: outdoor || false,
+      wifi: wifi || false,
+      accessibility: accessibility || false
     });
 
     res.status(201).json({

@@ -17,7 +17,10 @@ const Salle = sequelize.define('Salle', {
   capacityMin: DataTypes.INTEGER,
   capacityMax: DataTypes.INTEGER,
   price: DataTypes.DECIMAL(10, 2),
-  image: DataTypes.STRING,
+  images: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
   amenities: {
     type: DataTypes.JSON,
     defaultValue: []
