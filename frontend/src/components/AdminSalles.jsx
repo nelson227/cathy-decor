@@ -45,10 +45,13 @@ export default function AdminSalles() {
       if (filters.search) params.append('search', filters.search);
 
       const response = await api.get(`/salles?${params}`);
-      setSalles(response.data.data || []);
+      console.log('Salles API response:', response.data);
+      const sallesData = response.data.data || response.data || [];
+      console.log('Salles data:', sallesData);
+      setSalles(Array.isArray(sallesData) ? sallesData : []);
     } catch (error) {
       toast.error('Erreur lors du chargement des salles');
-      console.error(error);
+      console.error('Fetch salles error:', error);
     } finally {
       setLoading(false);
     }
