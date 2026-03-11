@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import api from '../services/api';
+
+// Cloudinary config - unsigned upload (no backend needed)
+const CLOUDINARY_CLOUD_NAME = 'dc9z1q1c8';
+const CLOUDINARY_UPLOAD_PRESET = 'cathy_decor_unsigned';
 
 /**
  * Custom hook for direct Cloudinary uploads
- * Bypasses backend multipart to avoid HTTP/2 issues
+ * Uses unsigned upload preset - no backend signature needed
  */
 export const useImageUpload = () => {
   const [uploading, setUploading] = useState(false);
@@ -11,9 +14,9 @@ export const useImageUpload = () => {
   const [error, setError] = useState(null);
 
   /**
-   * Upload directly to Cloudinary
+   * Upload directly to Cloudinary (unsigned)
    * @param {File} file - The image file to upload
-   * @param {string} folder - Destination folder (decorations, salles, services, etc.)
+   * @param {string} folder - Destination folder
    * @returns {Promise<string>} The uploaded image URL
    */
   const uploadToCloudinary = async (file, folder = 'services') => {
@@ -36,18 +39,62 @@ export const useImageUpload = () => {
         throw new Error('Fichier trop volumineux (max 5MB)');
       }
 
-      // Step 1: Get signature from backend (simple GET, no multipart)
-      const signatureResponse = await api.get(`/upload/signature/${folder}`);
-      
-      if (!signatureResponse.success || !signatureResponse.data) {
-        throw new Error('Impossible d\'obtenir la signature');
-      }
-
-      const { signature, timestamp, folder: cloudFolder, cloudName, apiKey } = signatureResponse.data;
-
-      // Step 2: Upload directly to Cloudinary
+      // Direct upload to Cloudinary with unsigned preset
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('folder', `cathy-decor/${folder}`);
+
+      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+      const response = await fetch(cloudinaryUrl, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Cloudinary error:', errorData);
+        throw new Error(errorData.error?.message || 'Erreur upload Cloudinary');
+      }
+
+      const result = await response.json();
+      setUploadProgress(100);
+      
+      return result.secure_url;
+
+    } catch (err) {
+      console.error('Upload error:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  /**
+   * Upload multiple files
+   */
+  const uploadMultiple = async (files, folder = 'services') => {
+    const urls = [];
+    for (const file of files) {
+      const url = await uploadToCloudinary(file, folder);
+      urls.push(url);
+    }
+    return urls;
+  };
+
+  return {
+    uploading,
+    uploadProgress,
+    error,
+    uploadToCloudinary,
+    uploadMultiple,
+    uploadSingle: uploadToCloudinary
+  };
+};
+
+export default useImageUpload;
       formData.append('api_key', apiKey);
       formData.append('timestamp', timestamp);
       formData.append('signature', signature);
