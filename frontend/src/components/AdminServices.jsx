@@ -104,11 +104,8 @@ export default function AdminServices() {
       const formDataUpload = new FormData();
       formDataUpload.append('image', file);
       
-      const response = await api.post('/upload/single/services', formDataUpload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      // Don't specify Content-Type - let axios/browser handle it
+      const response = await api.post('/upload/single/services', formDataUpload);
       
       const uploadedUrl = response?.url || response?.data?.url;
       if (uploadedUrl) {
