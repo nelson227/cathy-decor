@@ -4,7 +4,7 @@ Site web complet pour une entreprise de décoration événementielle au Cameroun
 
 ## Fonctionnalités
 
-- **Portfolio** - Galerie de projets avec filtres et demande de devis
+- **Décorations** - Galerie de projets avec filtres et demande de devis
 - **Marketplace** - Catalogue de produits de décoration
 - **Services** - Présentation des services (mariage, anniversaire, baptême, funéraire)
 - **Salles Partenaires** - Location de salles avec galerie photos et formulaire de réservation

@@ -500,7 +500,7 @@ function Home() {
               to="/portfolio"
               className="inline-block px-8 py-4 bg-dark text-white font-bold rounded-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:bg-gold"
             >
-              Voir tout le portfolio
+              Voir toutes nos décorations
             </Link>
           </div>
         </div>

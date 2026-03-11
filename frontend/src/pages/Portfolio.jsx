@@ -172,7 +172,7 @@ function Portfolio() {
       {/* Header */}
       <section className="bg-gradient-to-r from-dark to-dark text-white py-12">
         <div className="container-custom">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Notre Portfolio</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Nos Décorations</h1>
           <p className="text-lg text-gray-300">
             Découvrez nos réalisations et inspirez-vous pour votre événement
           </p>

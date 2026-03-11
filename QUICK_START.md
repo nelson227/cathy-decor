@@ -77,7 +77,7 @@ npm run dev
 | URL | Description |
 |-----|-------------|
 | `/` | Accueil |
-| `/portfolio` | Galerie de projets + demande de devis |
+| `/portfolio` | Galerie de décorations + demande de devis |
 | `/marketplace` | Catalogue de produits |
 | `/services` | Services proposés |
 | `/salles` | Salles partenaires + réservation |
