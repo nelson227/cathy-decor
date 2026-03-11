@@ -104,23 +104,8 @@ export default function AdminServices() {
       const formDataUpload = new FormData();
       formDataUpload.append('image', file);
       
-      // Use native fetch instead of axios for FormData upload
-      const token = localStorage.getItem('cathy-auth-token');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      
-      const fetchResponse = await fetch(`${apiUrl}/upload/single/services`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formDataUpload
-      });
-      
-      const response = await fetchResponse.json();
-      
-      if (!fetchResponse.ok) {
-        throw new Error(response.message || 'Erreur upload');
-      }
+      // Utiliser api.post() comme AdminProduits - gère automatiquement le token et Content-Type
+      const response = await api.post('/upload/single/services', formDataUpload);
       
       const uploadedUrl = response?.url || response?.data?.url;
       if (uploadedUrl) {
