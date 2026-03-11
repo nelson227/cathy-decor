@@ -1,4 +1,5 @@
 import express from 'express';
+import { Op } from 'sequelize';
 import Service from '../models/Service.js';
 
 const router = express.Router();
@@ -87,7 +88,6 @@ router.get('/', async (req, res) => {
 
     // Filter by search
     if (search) {
-      const { Op } = require('sequelize');
       where = {
         ...where,
         [Op.or]: [
@@ -208,7 +208,7 @@ router.post('/', async (req, res) => {
     // Check if name or slug already exists
     const existing = await Service.findOne({
       where: {
-        [require('sequelize').Op.or]: [
+        [Op.or]: [
           { name },
           { slug }
         ]
