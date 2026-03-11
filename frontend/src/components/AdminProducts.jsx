@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { FiTrash2, FiEdit2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useImageUpload } from '../hooks/useImageUpload';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const { uploading, uploadToCloudinary } = useImageUpload();
   const [formData, setFormData] = useState({
     category: 'mariage',
     theme: '',
@@ -62,25 +63,14 @@ export default function AdminProducts() {
     if (files.length === 0) return;
 
     try {
-      setUploading(true);
       const uploadedImages = [];
 
       for (const file of files) {
-        const formDataFile = new FormData();
-        formDataFile.append('image', file); // ⚠️ IMPORTANT: doit être 'image' pas 'file'
-
-        const response = await api.post('/upload/single/decorations', formDataFile);
-
-        // La réponse contient directement { url, fileName, size, folder }
-        console.log('Upload response structure:', response.data);
-        
-        // Accéder à l'URL directement depuis response.data.url
-        const uploadedUrl = response.data?.url;
-        if (uploadedUrl) {
-          uploadedImages.push(uploadedUrl);
-          console.log('✅ URL sauvegardée:', uploadedUrl);
-        } else {
-          console.warn('⚠️ URL non trouvée dans:', response.data);
+        // Upload direct vers Cloudinary
+        const imageUrl = await uploadToCloudinary(file, 'decorations');
+        if (imageUrl) {
+          uploadedImages.push(imageUrl);
+          console.log('✅ Image uploadée:', imageUrl);
         }
       }
 
@@ -93,9 +83,7 @@ export default function AdminProducts() {
       }
     } catch (error) {
       console.error('Erreur upload:', error);
-      toast.error('Erreur lors de l\'upload des images');
-    } finally {
-      setUploading(false);
+      toast.error(error.message || 'Erreur lors de l\'upload des images');
     }
   };
 
