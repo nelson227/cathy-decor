@@ -103,7 +103,13 @@ export default function AdminServices() {
       setUploading(true);
       const formDataUpload = new FormData();
       formDataUpload.append('image', file);
-      const response = await api.post('/upload/single/services', formDataUpload);
+      
+      const response = await api.post('/upload/single/services', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
       const uploadedUrl = response?.url || response?.data?.url;
       if (uploadedUrl) {
         setFormData(prev => ({ ...prev, image: uploadedUrl }));
