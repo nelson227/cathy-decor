@@ -52,8 +52,11 @@ const corsOptions = {
   maxAge: 86400
 };
 
-// Security Middleware
-app.use(helmet());
+// Security Middleware - with relaxed settings for file uploads
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false
+}));
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
