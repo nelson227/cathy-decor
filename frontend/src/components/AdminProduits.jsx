@@ -524,7 +524,17 @@ export default function AdminProduits() {
                       <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>Aucune</span>
                     )}
                   </td>
-                  <td><span className="badge">{p.images?.length || 0}</span></td>
+                  <td>
+                    {p.images?.[0] ? (
+                      <img 
+                        src={getImageUrl(p.images[0])} 
+                        alt={p.name}
+                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                      />
+                    ) : (
+                      <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>Aucune</span>
+                    )}
+                  </td>
                   <td className="actions">
                     <button className="btn-icon edit" onClick={() => handleEdit(p)} title="Modifier">
                       <FiEdit2 />
