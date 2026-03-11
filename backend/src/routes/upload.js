@@ -3,7 +3,6 @@ import {
   uploadSingleImage,
   uploadMultipleImages,
   validateImageUpload,
-  validateImageUploadJSON,
   validateMultipleImageUploads,
   handleMulterError
 } from '../middleware/upload.js';
@@ -26,26 +25,24 @@ const isCloudinaryConfigured = () => {
 /**
  * POST /api/upload/single/:folder
  * Upload single image to Cloudinary (production) or local storage (dev)
- * Accepts FormData (multipart) OR JSON with base64 image
+ * Accepts FormData multipart with 'image' field
  * Protected: Admin only
  */
 router.post(
   '/single/:folder',
   verifyToken,
   verifyAdmin,
-  (req, res, next) => {
-    // Only use multer if not JSON body
-    if (req.is('multipart/form-data')) {
-      uploadSingleImage(req, res, next);
-    } else {
-      next();
-    }
-  },
-  validateImageUploadJSON,
+  uploadSingleImage,
   async (req, res) => {
     try {
       const { folder } = req.params;
-      let buffer, originalname;
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'Aucune image fournie'
+        });
+      }
 
       // Validate folder
       const validFolders = ['decorations', 'salles', 'testimonials', 'products', 'produits', 'services'];
@@ -56,29 +53,12 @@ router.post(
         });
       }
 
-      // Handle both FormData and JSON base64
-      if (req.file) {
-        // FormData upload
-        buffer = req.file.buffer;
-        originalname = req.file.originalname;
-      } else if (req.body.image && req.body.image.startsWith('data:')) {
-        // Base64 JSON upload
-        const base64Data = req.body.image.split(',')[1];
-        buffer = Buffer.from(base64Data, 'base64');
-        originalname = req.body.fileName || 'image.jpg';
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: 'Aucune image fournie (FormData ou base64)'
-        });
-      }
-
       let result;
 
       // Use Cloudinary in production, local storage in development
       if (isCloudinaryConfigured()) {
         console.log('📤 Uploading to Cloudinary...');
-        const cloudinaryResult = await uploadImage(buffer, folder);
+        const cloudinaryResult = await uploadImage(req.file.buffer, folder);
         result = {
           success: true,
           url: cloudinaryResult.secure_url,
@@ -88,7 +68,7 @@ router.post(
         };
       } else {
         console.log('📤 Uploading to local storage...');
-        result = uploadFile(buffer, folder, originalname);
+        result = uploadFile(req.file.buffer, folder, req.file.originalname);
       }
 
       if (!result.success) {
@@ -102,7 +82,7 @@ router.post(
         success: true,
         data: {
           url: result.url,
-          fileName: originalname,
+          fileName: req.file.originalname,
           size: result.size,
           folder: result.folder
         },

@@ -95,89 +95,27 @@ export default function AdminServices() {
     setShowModal(true);
   };
 
-  // Compress image using Canvas API
-  const compressImage = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let { width, height } = img;
-          
-          // Resize if too large
-          const maxWidth = 1200;
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Compress to JPEG 75% quality
-          canvas.toBlob(
-            (blob) => {
-              const compressedReader = new FileReader();
-              compressedReader.onload = (ev) => {
-                resolve({
-                  base64: ev.target.result,
-                  size: blob.size
-                });
-              };
-              compressedReader.readAsDataURL(blob);
-            },
-            'image/jpeg',
-            0.75
-          );
-        };
-        img.onerror = () => reject(new Error('Impossible de charger l\'image'));
-        img.src = e.target.result;
-      };
-      reader.onerror = () => reject(new Error('Erreur lecture fichier'));
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       setUploading(true);
-      
-      // Compress image first
-      const compressed = await compressImage(file);
-      const base64 = compressed.base64;
-          
-          // Send as JSON with compressed base64 data
-          const response = await api.post('/upload/single/services', {
-            image: base64,
-            fileName: file.name.replace(/\.[^/.]+$/, '.jpg'), // Force .jpg
-            mimeType: 'image/jpeg',
-            size: compressed.size
-          });
-          
-          const uploadedUrl = response?.url || response?.data?.url;
-          
-          if (uploadedUrl) {
-            setFormData(prev => ({ ...prev, image: uploadedUrl }));
-            setImagePreview(uploadedUrl);
-            toast.success('Image téléchargée avec succès');
-          } else {
-            toast.error('URL image non retournée');
-          }
-        } catch (error) {
-          console.error('Erreur upload:', error);
-          toast.error('Erreur lors du téléchargement de l\'image');
-          setUploading(false);
-        }
-      
+      const formDataUpload = new FormData();
+      formDataUpload.append('image', file);
+      const response = await api.post('/upload/single/services', formDataUpload);
+      const uploadedUrl = response?.url || response?.data?.url;
+      if (uploadedUrl) {
+        setFormData(prev => ({ ...prev, image: uploadedUrl }));
+        setImagePreview(uploadedUrl);
+        toast.success('Image téléchargée avec succès');
+      } else {
+        toast.error('URL image non retournée');
+      }
     } catch (error) {
-      console.error('Erreur préparation upload:', error);
-      toast.error('Erreur lors de la préparation du fichier');
+      console.error('Erreur upload:', error);
+      toast.error('Erreur lors du téléchargement de l\'image');
+    } finally {
       setUploading(false);
     }
   };
