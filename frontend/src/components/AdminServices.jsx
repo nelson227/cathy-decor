@@ -95,6 +95,52 @@ export default function AdminServices() {
     setShowModal(true);
   };
 
+  // Compress image using Canvas API
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          
+          // Resize if too large
+          const maxWidth = 1200;
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG 75% quality
+          canvas.toBlob(
+            (blob) => {
+              const compressedReader = new FileReader();
+              compressedReader.onload = (ev) => {
+                resolve({
+                  base64: ev.target.result,
+                  size: blob.size
+                });
+              };
+              compressedReader.readAsDataURL(blob);
+            },
+            'image/jpeg',
+            0.75
+          );
+        };
+        img.onerror = () => reject(new Error('Impossible de charger l\'image'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Erreur lecture fichier'));
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -102,18 +148,16 @@ export default function AdminServices() {
     try {
       setUploading(true);
       
-      // Convert to base64
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const base64 = event.target.result;
+      // Compress image first
+      const compressed = await compressImage(file);
+      const base64 = compressed.base64;
           
-          // Send as JSON with base64 data
+          // Send as JSON with compressed base64 data
           const response = await api.post('/upload/single/services', {
             image: base64,
-            fileName: file.name,
-            mimeType: file.type,
-            size: file.size
+            fileName: file.name.replace(/\.[^/.]+$/, '.jpg'), // Force .jpg
+            mimeType: 'image/jpeg',
+            size: compressed.size
           });
           
           const uploadedUrl = response?.url || response?.data?.url;
@@ -128,12 +172,8 @@ export default function AdminServices() {
         } catch (error) {
           console.error('Erreur upload:', error);
           toast.error('Erreur lors du téléchargement de l\'image');
-        } finally {
           setUploading(false);
         }
-      };
-      
-      reader.readAsDataURL(file);
       
     } catch (error) {
       console.error('Erreur préparation upload:', error);
