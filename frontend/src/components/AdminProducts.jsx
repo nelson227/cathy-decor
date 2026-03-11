@@ -39,6 +39,14 @@ export default function AdminProducts() {
 
   useEffect(() => { fetchDecorations(); }, []);
 
+  // Fonction pour détecter si c'est une vidéo
+  const isVideo = (url) => {
+    if (!url) return false;
+    const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.m4v'];
+    const lowerUrl = url.toLowerCase();
+    return videoExtensions.some(ext => lowerUrl.includes(ext)) || lowerUrl.includes('/video/');
+  };
+
   const getImageUrl = (imgUrl) => {
     if (!imgUrl) return '';
     
@@ -79,7 +87,7 @@ export default function AdminProducts() {
           ...formData,
           images: [...(formData.images || []), ...uploadedImages]
         });
-        toast.success(`${uploadedImages.length} image(s) uploadée(s)`);
+        toast.success(`${uploadedImages.length} média(s) uploadé(s)`);
       }
     } catch (error) {
       console.error('Erreur upload:', error);
@@ -247,12 +255,12 @@ export default function AdminProducts() {
             </div>
 
             <div className="form-group">
-              <label>Photos *</label>
+              <label>Photos / Vidéos *</label>
               <div className="upload-area">
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,video/*"
                   onChange={handleImageUpload}
                   disabled={uploading}
                   className="file-input"
@@ -260,7 +268,7 @@ export default function AdminProducts() {
                 />
                 <label htmlFor="file-upload" className="upload-label">
                   <FiUpload size={24} />
-                  <span>{uploading ? 'Upload en cours...' : 'Cliquez pour ajouter des photos'}</span>
+                  <span>{uploading ? 'Upload en cours...' : 'Cliquez pour ajouter des photos ou vidéos'}</span>
                 </label>
               </div>
 
@@ -268,22 +276,33 @@ export default function AdminProducts() {
               {formData.images && formData.images.length > 0 && (
                 <div className="images-preview">
                   <p className="images-count">
-                    {formData.images.length} image(s) ajoutée(s)
-                    {formData.images.length > 0 && <span className="first-image-hint"> (la 1ère sera l'affichage principal)</span>}
+                    {formData.images.length} média(s) ajouté(s)
+                    {formData.images.length > 0 && <span className="first-image-hint"> (le 1er sera l'affichage principal)</span>}
                   </p>
                   <div className="images-grid">
                     {formData.images.map((img, index) => (
                       <div key={index} className="image-item">
-                        <img 
-                          src={getImageUrl(img)} 
-                          alt={`Preview ${index}`}
-                          crossOrigin="anonymous"
-                          onError={(e) => {
-                            console.error(`Erreur chargement image ${index}:`, img);
-                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect fill="%23eee" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-family="sans-serif" font-size="14" fill="%23999" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
-                          }}
-                        />
+                        {isVideo(img) ? (
+                          <video 
+                            src={getImageUrl(img)}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            muted
+                            onMouseEnter={(e) => e.target.play()}
+                            onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                          />
+                        ) : (
+                          <img 
+                            src={getImageUrl(img)} 
+                            alt={`Preview ${index}`}
+                            crossOrigin="anonymous"
+                            onError={(e) => {
+                              console.error(`Erreur chargement image ${index}:`, img);
+                              e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect fill="%23eee" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-family="sans-serif" font-size="14" fill="%23999" text-anchor="middle" dy=".3em"%3EImage non disponible%3C/text%3E%3C/svg%3E';
+                            }}
+                          />
+                        )}
                         {index === 0 && <span className="badge-cover">Couverture</span>}
+                        {isVideo(img) && <span className="badge-video" style={{ position: 'absolute', top: '4px', right: '4px', background: '#e53e3e', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '10px' }}>VIDEO</span>}
                         <button
                           type="button"
                           className="btn-remove"
@@ -331,7 +350,7 @@ export default function AdminProducts() {
                 <th>Service</th>
                 <th>Thème</th>
                 <th>Description</th>
-                <th>Images</th>
+                <th>Médias</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -343,11 +362,22 @@ export default function AdminProducts() {
                   <td>{product.description?.substring(0, 50)}...</td>
                   <td>
                     {product.images?.[0] ? (
-                      <img 
-                        src={getImageUrl(product.images[0])} 
-                        alt={product.theme || 'Décoration'}
-                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
-                      />
+                      isVideo(product.images[0]) ? (
+                        <div style={{ position: 'relative', width: '50px', height: '50px' }}>
+                          <video 
+                            src={getImageUrl(product.images[0])}
+                            style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                            muted
+                          />
+                          <span style={{ position: 'absolute', bottom: '2px', right: '2px', background: '#e53e3e', color: 'white', padding: '1px 3px', borderRadius: '2px', fontSize: '8px' }}>▶</span>
+                        </div>
+                      ) : (
+                        <img 
+                          src={getImageUrl(product.images[0])} 
+                          alt={product.theme || 'Décoration'}
+                          style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                        />
+                      )
                     ) : (
                       <span className="text-gray-400">Aucune</span>
                     )}

@@ -15,9 +15,9 @@ export const useImageUpload = () => {
 
   /**
    * Upload directly to Cloudinary (unsigned)
-   * @param {File} file - The image file to upload
+   * @param {File} file - The image or video file to upload
    * @param {string} folder - Destination folder
-   * @returns {Promise<string>} The uploaded image URL
+   * @returns {Promise<string>} The uploaded file URL
    */
   const uploadToCloudinary = async (file, folder = 'services') => {
     try {
@@ -30,13 +30,19 @@ export const useImageUpload = () => {
         throw new Error('Aucun fichier sélectionné');
       }
 
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        throw new Error('Format non supporté. Utilisez JPEG, PNG, GIF ou WebP');
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      const validVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+      const isImage = validImageTypes.includes(file.type);
+      const isVideo = validVideoTypes.includes(file.type);
+
+      if (!isImage && !isVideo) {
+        throw new Error('Format non supporté. Utilisez JPEG, PNG, GIF, WebP pour les images ou MP4, WebM, MOV pour les vidéos');
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        throw new Error('Fichier trop volumineux (max 5MB)');
+      // Limite de taille : 5MB pour images, 100MB pour vidéos
+      const maxSize = isVideo ? 100 * 1024 * 1024 : 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        throw new Error(`Fichier trop volumineux (max ${isVideo ? '100MB' : '5MB'})`);
       }
 
       // Direct upload to Cloudinary with unsigned preset
@@ -45,7 +51,9 @@ export const useImageUpload = () => {
       formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
       formData.append('folder', `cathy-decor/${folder}`);
 
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+      // Utiliser l'endpoint approprié selon le type de fichier
+      const resourceType = isVideo ? 'video' : 'image';
+      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
 
       const response = await fetch(cloudinaryUrl, {
         method: 'POST',
