@@ -95,59 +95,6 @@ export const useImageUpload = () => {
 };
 
 export default useImageUpload;
-      formData.append('api_key', apiKey);
-      formData.append('timestamp', timestamp);
-      formData.append('signature', signature);
-      formData.append('folder', cloudFolder);
-      formData.append('quality', 'auto:good');
-      formData.append('format', 'webp');
-
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
-      const response = await fetch(cloudinaryUrl, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Erreur Cloudinary');
-      }
-
-      const result = await response.json();
-      setUploadProgress(100);
-      
-      return result.secure_url;
-
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  /**
-   * Upload multiple files
-   */
-  const uploadMultiple = async (files, folder = 'services') => {
-    const urls = [];
-    for (const file of files) {
-      const url = await uploadToCloudinary(file, folder);
-      urls.push(url);
-    }
-    return urls;
-  };
-
-  return {
-    uploading,
-    uploadProgress,
-    error,
-    uploadToCloudinary,
-    uploadMultiple,
-    // Alias for backwards compatibility
-    uploadSingle: uploadToCloudinary
-  };
 };
 
 export default useImageUpload;
