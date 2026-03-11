@@ -65,12 +65,12 @@ function Cart() {
       <div className="min-h-screen pt-20 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Votre panier est vide</h1>
-          <p className="text-gray-600 mb-6">Explorez notre marketplace pour ajouter des articles</p>
+          <p className="text-gray-600 mb-6">Explorez nos articles en location pour ajouter des articles</p>
           <button
             onClick={() => navigate('/marketplace')}
             className="btn-primary"
           >
-            Retour à la marketplace
+            Voir les articles en location
           </button>
         </div>
       </div>

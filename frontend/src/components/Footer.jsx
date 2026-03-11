@@ -30,7 +30,7 @@ function Footer() {
           <div>
             <h4 className="font-bold mb-4 text-gold">Services</h4>
             <ul className="space-y-2 text-gray-300">
-              <li><Link to="/marketplace" className="hover:text-gold transition">Marketplace</Link></li>
+              <li><Link to="/marketplace" className="hover:text-gold transition">Location</Link></li>
               <li><Link to="/salles" className="hover:text-gold transition">Salles partenaires</Link></li>
               <li><Link to="/services" className="hover:text-gold transition">Plans personnalisés</Link></li>
               <li><Link to="/contact" className="hover:text-gold transition">Contact</Link></li>

@@ -658,10 +658,10 @@ function Portfolio() {
         <div className="container-custom text-center">
           <h2 className="text-3xl font-bold mb-4">Intéressé par nos services?</h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Découvrez notre marketplace pour commander vos décorations
+            Découvrez nos articles en location pour vos événements
           </p>
           <a href="/marketplace" className="btn-primary">
-            Accéder à la marketplace
+            Voir les articles en location
           </a>
         </div>
       </section>

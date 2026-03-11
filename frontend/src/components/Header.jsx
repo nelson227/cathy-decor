@@ -22,7 +22,7 @@ function Header() {
           <nav className="hidden md:flex items-center gap-8">
             <Link to="/" className="hover:text-gold transition">Accueil</Link>
             <Link to="/portfolio" className="hover:text-gold transition">Décorations</Link>
-            <Link to="/marketplace" className="hover:text-gold transition">Marketplace</Link>
+            <Link to="/marketplace" className="hover:text-gold transition">Location</Link>
             <Link to="/salles" className="hover:text-gold transition">Salles</Link>
             <Link to="/services" className="hover:text-gold transition">Services</Link>
             <Link to="/contact" className="hover:text-gold transition">Contact</Link>
@@ -64,7 +64,7 @@ function Header() {
           <nav className="md:hidden pb-4 flex flex-col gap-3 border-t border-gray-200">
             <Link to="/" className="px-4 py-2 hover:text-gold transition" onClick={() => setMobileMenuOpen(false)}>Accueil</Link>
             <Link to="/portfolio" className="px-4 py-2 hover:text-gold transition" onClick={() => setMobileMenuOpen(false)}>Décorations</Link>
-            <Link to="/marketplace" className="px-4 py-2 hover:text-gold transition" onClick={() => setMobileMenuOpen(false)}>Marketplace</Link>
+            <Link to="/marketplace" className="px-4 py-2 hover:text-gold transition" onClick={() => setMobileMenuOpen(false)}>Location</Link>
             <Link to="/salles" className="px-4 py-2 hover:text-gold transition" onClick={() => setMobileMenuOpen(false)}>Salles</Link>
             <Link to="/services" className="px-4 py-2 hover:text-gold transition" onClick={() => setMobileMenuOpen(false)}>Services</Link>
             <Link to="/contact" className="px-4 py-2 hover:text-gold transition" onClick={() => setMobileMenuOpen(false)}>Contact</Link>

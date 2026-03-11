@@ -32,7 +32,7 @@ export default function AdminDashboard() {
     { id: 'stats', label: 'Tableau de bord', icon: '📊' },
     { id: 'products', label: 'Décorations', icon: '🎨' },
     { id: 'services', label: 'Services', icon: '⭐' },
-    { id: 'produits', label: 'Marketplace', icon: '🛋️' },
+    { id: 'produits', label: 'Location', icon: '🛋️' },
     { id: 'salles', label: 'Salles', icon: '🏢' },
     { id: 'orders', label: 'Commandes', icon: '📦' }
   ];

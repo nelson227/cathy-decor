@@ -223,7 +223,7 @@ export default function AdminProduits() {
   return (
     <div className="admin-section">
       <div className="section-header">
-        <h2>Gestion des Produits Marketplace</h2>
+        <h2>Gestion des Produits Location</h2>
         <button
           className="btn btn-primary"
           onClick={() => { resetForm(); setEditingId(null); setShowForm(!showForm); }}

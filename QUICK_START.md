@@ -78,7 +78,7 @@ npm run dev
 |-----|-------------|
 | `/` | Accueil |
 | `/portfolio` | Galerie de décorations + demande de devis |
-| `/marketplace` | Catalogue de produits |
+| `/marketplace` | Catalogue de produits en location |
 | `/services` | Services proposés |
 | `/salles` | Salles partenaires + réservation |
 | `/about` | À propos |
@@ -96,7 +96,7 @@ Depuis `/admin`, vous pouvez gérer:
 - **Décorations** - Portfolio de projets réalisés
 - **Services** - Services proposés
 - **Salles** - Salles partenaires
-- **Produits** - Marketplace
+- **Produits** - Location
 - **Commandes** - Commandes clients
 
 ---
