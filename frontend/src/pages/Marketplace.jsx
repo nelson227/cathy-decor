@@ -207,14 +207,14 @@ function Marketplace() {
                 <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm border">
                   {/* Product Image */}
                   <div 
-                    className="aspect-square bg-gray-100 relative"
+                    className="aspect-square bg-gray-50 relative"
                     onClick={() => handleQuickView(product)}
                   >
-                    {product.image ? (
+                    {product.images?.[0] ? (
                       <img
-                        src={getImageUrl(product.image)}
+                        src={getImageUrl(product.images[0])}
                         alt={product.name}
-                        className="w-full h-full object-contain p-2"
+                        className="w-full h-full object-contain p-3"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -234,7 +234,13 @@ function Marketplace() {
                     
                     {/* Add to Cart Button */}
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={() => handleAddToCart({
+                        id: product.id,
+                        name: product.name,
+                        price: Number(product.price),
+                        image: product.images?.[0] || null,
+                        quantity: 1
+                      })}
                       className="mt-2 w-full bg-primary-dark text-white text-xs py-2 rounded-md hover:bg-primary-dark/90 transition flex items-center justify-center gap-1"
                     >
                       <FiShoppingCart size={14} />
