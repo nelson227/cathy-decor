@@ -292,13 +292,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 export default router;
-      return res.status(404).json({ success: false, message: 'Service non trouvé' });
-    }
-
-    res.json({ success: true, data: service });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-export default router;
