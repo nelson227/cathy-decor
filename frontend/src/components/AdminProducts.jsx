@@ -342,9 +342,15 @@ export default function AdminProducts() {
                   <td>{product.theme || 'N/A'}</td>
                   <td>{product.description?.substring(0, 50)}...</td>
                   <td>
-                    <span className="badge">
-                      {product.images?.length || 0} image(s)
-                    </span>
+                    {product.images?.[0] ? (
+                      <img 
+                        src={getImageUrl(product.images[0])} 
+                        alt={product.theme || 'Décoration'}
+                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                      />
+                    ) : (
+                      <span className="text-gray-400">Aucune</span>
+                    )}
                   </td>
                   <td className="actions">
                     <button
