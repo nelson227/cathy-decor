@@ -104,8 +104,23 @@ export default function AdminServices() {
       const formDataUpload = new FormData();
       formDataUpload.append('image', file);
       
-      // Don't specify Content-Type - let axios/browser handle it
-      const response = await api.post('/upload/single/services', formDataUpload);
+      // Use native fetch instead of axios for FormData upload
+      const token = localStorage.getItem('cathy-auth-token');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      
+      const fetchResponse = await fetch(`${apiUrl}/upload/single/services`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formDataUpload
+      });
+      
+      const response = await fetchResponse.json();
+      
+      if (!fetchResponse.ok) {
+        throw new Error(response.message || 'Erreur upload');
+      }
       
       const uploadedUrl = response?.url || response?.data?.url;
       if (uploadedUrl) {
