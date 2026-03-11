@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiChevronDown, FiChevronUp, FiShoppingCart } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiShoppingCart, FiX, FiSliders } from 'react-icons/fi';
 import { useCart } from '../hooks';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -22,25 +22,26 @@ const CATEGORIES = [
 const SORT_OPTIONS = [
   { value: 'featured', label: 'Recommandé' },
   { value: 'newest', label: 'Plus récent' },
-  { value: 'price-asc', label: 'Prix (bas à élevé)' },
-  { value: 'price-desc', label: 'Prix (élevé à bas)' },
+  { value: 'price-asc', label: 'Prix croissant' },
+  { value: 'price-desc', label: 'Prix décroissant' },
   { value: 'name-asc', label: 'Nom (A-Z)' },
-  { value: 'name-desc', label: 'Nom (Z-A)' },
 ];
 
 function Marketplace() {
   // State
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [categoryCounts, setCategoryCounts] = useState({});
   
   // Filters
   const [selectedCategory, setSelectedCategory] = useState('');
   const [priceRange, setPriceRange] = useState([100, 15000]);
   const [sortBy, setSortBy] = useState('featured');
-  const [showSortDropdown, setShowSortDropdown] = useState(false);
   
-  // Expandable filters
+  // Mobile filter modal
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+
+  // Desktop expandable filters
   const [expandedFilters, setExpandedFilters] = useState({
     prix: true,
     couleur: false,
@@ -72,15 +73,6 @@ function Marketplace() {
 
       const response = await api.get(`/produits?${params}`);
       setProducts(response.data || []);
-      
-      // Set category counts
-      if (response.categoryCounts) {
-        const counts = {};
-        response.categoryCounts.forEach(c => {
-          counts[c.category] = c.count;
-        });
-        setCategoryCounts(counts);
-      }
     } catch (error) {
       console.error('Erreur chargement produits:', error);
       setProducts([]);
@@ -106,7 +98,7 @@ function Marketplace() {
     return price >= priceRange[0] && price <= priceRange[1];
   });
 
-  // Toggle filter section
+  // Toggle filter section (desktop)
   const toggleFilter = (filterName) => {
     setExpandedFilters(prev => ({
       ...prev,
@@ -126,15 +118,10 @@ function Marketplace() {
     toast.success(`${item.name} ajouté au panier`);
   };
 
-  // Get total products count
-  const getTotalCount = () => {
-    return Object.values(categoryCounts).reduce((sum, count) => sum + count, 0);
-  };
-
-  // Get category count
-  const getCategoryCount = (categoryId) => {
-    if (!categoryId) return getTotalCount();
-    return categoryCounts[categoryId] || 0;
+  // Apply filters from modal
+  const applyFilters = () => {
+    fetchProducts();
+    setShowFilterModal(false);
   };
 
   return (
@@ -152,7 +139,117 @@ function Marketplace() {
         )}
       </button>
 
-      <div className="container-custom py-8">
+      {/* =============== MOBILE VERSION =============== */}
+      <div className="lg:hidden">
+        {/* Header */}
+        <div className="px-4 py-4">
+          <h1 className="text-2xl font-bold text-primary-dark">
+            {selectedCategory 
+              ? CATEGORIES.find(c => c.id === selectedCategory)?.name 
+              : 'Tous les articles'}
+          </h1>
+        </div>
+
+        {/* Categories - Horizontal Scrollable */}
+        <div className="px-4 pb-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition whitespace-nowrap ${
+                  selectedCategory === cat.id
+                    ? 'bg-primary-dark text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Count + Filter/Sort */}
+        <div className="flex items-center justify-between px-4 py-3 border-b">
+          <span className="text-sm text-gray-600">
+            {filteredProducts.length} article{filteredProducts.length > 1 ? 's' : ''}
+          </span>
+          <button
+            onClick={() => setShowFilterModal(true)}
+            className="text-sm font-medium text-primary-dark underline"
+          >
+            Filtrer et trier
+          </button>
+        </div>
+
+        {/* Products Grid - Mobile */}
+        <div className="px-4 py-4">
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-dark"></div>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Aucun produit trouvé</p>
+              <button
+                onClick={() => {
+                  setSelectedCategory('');
+                  setPriceRange([100, 15000]);
+                }}
+                className="mt-3 text-primary-dark text-sm underline"
+              >
+                Réinitialiser
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm border">
+                  {/* Product Image */}
+                  <div 
+                    className="aspect-square bg-gray-100 relative"
+                    onClick={() => handleQuickView(product)}
+                  >
+                    {product.image ? (
+                      <img
+                        src={getImageUrl(product.image)}
+                        alt={product.name}
+                        className="w-full h-full object-contain p-2"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <span className="text-4xl">📦</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Product Info */}
+                  <div className="p-3">
+                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                      {product.name}
+                    </h3>
+                    <p className="text-primary-dark font-bold text-sm">
+                      {Number(product.price).toLocaleString('fr-FR')} FCFA
+                    </p>
+                    
+                    {/* Add to Cart Button */}
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="mt-2 w-full bg-primary-dark text-white text-xs py-2 rounded-md hover:bg-primary-dark/90 transition flex items-center justify-center gap-1"
+                    >
+                      <FiShoppingCart size={14} />
+                      Ajouter
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* =============== DESKTOP VERSION =============== */}
+      <div className="hidden lg:block container-custom py-8">
         <div className="flex gap-8">
           {/* Sidebar Filters */}
           <aside className="w-64 flex-shrink-0">
@@ -333,7 +430,7 @@ function Marketplace() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -348,6 +445,82 @@ function Marketplace() {
           </main>
         </div>
       </div>
+
+      {/* =============== MOBILE FILTER MODAL =============== */}
+      {showFilterModal && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowFilterModal(false)}
+          />
+          
+          {/* Modal */}
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b px-4 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-primary-dark">Filtrer et trier</h2>
+              <button 
+                onClick={() => setShowFilterModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 space-y-6">
+              {/* Sort */}
+              <div>
+                <h3 className="font-semibold mb-3">Trier par</h3>
+                <div className="space-y-2">
+                  {SORT_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => setSortBy(option.value)}
+                      className={`w-full text-left px-4 py-3 rounded-lg text-sm transition ${
+                        sortBy === option.value
+                          ? 'bg-primary-dark text-white'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div>
+                <h3 className="font-semibold mb-3">Prix</h3>
+                <input
+                  type="range"
+                  min="100"
+                  max="15000"
+                  step="100"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                  className="w-full accent-primary-dark"
+                />
+                <div className="flex justify-between text-sm text-gray-600 mt-2">
+                  <span>{priceRange[0].toLocaleString('fr-FR')} FCFA</span>
+                  <span>{priceRange[1].toLocaleString('fr-FR')} FCFA</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <div className="sticky bottom-0 bg-white border-t p-4">
+              <button
+                onClick={applyFilters}
+                className="w-full bg-primary-dark text-white py-3 rounded-lg font-semibold"
+              >
+                Appliquer les filtres
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick View Modal */}
       <QuickViewModal

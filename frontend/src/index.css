@@ -78,6 +78,15 @@ button {
   padding: 0 20px;
 }
 
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
 .btn-primary {
   @apply px-6 py-3 bg-gold text-white rounded-lg hover:bg-opacity-80 transition;
 }
